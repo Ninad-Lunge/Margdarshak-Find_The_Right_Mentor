@@ -55,7 +55,7 @@ const MentorRegister = () =>{
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const response = await fetch('http://localhost:5000/api/mentors', {
+        const response = await fetch('/api/register-mentor', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

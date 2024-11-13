@@ -26,6 +26,7 @@ const HomePage = () => {
           <img
             className="mr-[220px] mt-[170px] w-[150px] h-auto object-cover"
             src={HomeImg}
+            alt='icon'
           />
         </div>
       </div>
@@ -53,7 +54,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="ml-[120px] mr-[220px]">
+      <div className="ml-[120px] mr-[220px]" id="about">
         {/*About Section*/}
         <h1 className="text-xl mt-[100px]">About</h1>
         <h1 className="mt-[30px] mb-[30px]">
@@ -69,7 +70,7 @@ const HomePage = () => {
         </h1>
       </div>
 
-      <div className="ml-[120px] mr-[220px]">
+      <div className="ml-[120px] mr-[220px]" id="how">
       <h1 className="text-xl mt-[100px]">How it WORKS?</h1>
         <h1 className="mt-[30px] mb-[30px]">
           It is a long established fact that a reader will be distracted by the

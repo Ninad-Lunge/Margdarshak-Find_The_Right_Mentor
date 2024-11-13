@@ -55,13 +55,19 @@ passport.deserializeUser((user, done) => {
 
 // Routes
 const mentorRoutes = require('./routes/mentors');
-app.use('/api/mentors', mentorRoutes);
+app.use('/api', mentorRoutes);
 
 const menteeRoutes = require('./routes/mentee');
-app.use('/api/mentees', menteeRoutes);
+app.use('/api', menteeRoutes);
 
 const meetingRoutes = require('./routes/meetings');
 app.use('/api/meetings', meetingRoutes);
+
+const loginRoutes = require('./routes/login');
+app.use('/api/auth', loginRoutes);
+
+const slotsRoute = require('./routes/slots');
+app.use('/api/slots', slotsRoute);
 
 // OAuth 2 configuration
 const oauth2Client = new google.auth.OAuth2
@@ -69,7 +75,11 @@ const oauth2Client = new google.auth.OAuth2
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URL
-); 
+);
+
+app.get('/', (req, res) => {
+    res.send('Welcome to the Server');
+});
 
 app.get('/auth', (req, res) => {
 

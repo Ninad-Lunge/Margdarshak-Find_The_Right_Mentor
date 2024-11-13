@@ -1,9 +1,9 @@
-import logo from '../Assets/MentorHands.png';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import logo from '../Assets/MentorHands.png';
 
 const LoginPage = () => {
-
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -11,6 +11,7 @@ const LoginPage = () => {
         password: '',
         role: 'Mentee',
     });
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,9 +21,26 @@ const LoginPage = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form Data Submitted: ', formData);
+        try {
+            const response = await axios.post('/api/auth/login', formData);
+            if (response.data.success) {
+                // Set isLoggedIn in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Redirect based on role
+                if (formData.role === 'Mentor') {
+                    navigate('/mentor-dashboard');
+                } else {
+                    navigate('/mentee-dashboard');
+                }
+            } else {
+                setError(response.data.message || 'Login failed');
+            }
+        } catch (error) {
+            setError('An error occurred. Please try again.');
+        }
     };
 
     const toggleRole = () => {
@@ -42,16 +60,13 @@ const LoginPage = () => {
 
     return (
         <div className="login-container flex flex-col md:flex-row justify-center items-center min-h-screen p-4 bg-gray-100">
-            {/* Left side - Logo */}
             <div className="logo-container w-full md:w-1/3 flex justify-center items-center h-full">
                 <img src={logo} alt="icon" className="logo w-3/4 md:w-1/2" />
             </div>
 
-            {/* Right side - Form */}
             <div className="form-container w-full md:w-2/3 bg-white flex flex-col justify-center p-8 md:p-40 max-h-screen">
                 <h1 className="text-xl font-semibold mb-6">Log In as {formData.role}</h1>
 
-                {/* Role Toggle */}
                 <div className="toggle-role mb-6">
                     <button 
                         className={`px-4 py-2 ${formData.role === 'Mentor' ? 'bg-white-500 text-black border border-black' : 'bg-gray-200'} rounded-l-md`}
@@ -88,6 +103,8 @@ const LoginPage = () => {
                             required
                         />
                     </div>
+
+                    {error && <p className="text-red-500">{error}</p>}
 
                     <button className="w-[560px] h-[50px] bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors" type="submit">
                         Log In

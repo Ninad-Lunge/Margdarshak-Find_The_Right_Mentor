@@ -34,7 +34,7 @@ const MenteeRegister = () => {
         console.log('Form Data Submitted: ', formData);
 
         try {
-            const response = await fetch('http://localhost:5000/api/mentees', {
+            const response = await fetch('/api/register-mentee', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

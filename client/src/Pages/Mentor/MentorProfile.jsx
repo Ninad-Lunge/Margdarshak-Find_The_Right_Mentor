@@ -1,6 +1,6 @@
 import React from "react";
 import { FaStar } from 'react-icons/fa';
-import { FaLinkedin, FaTwitter, FaGithub, FaYoutube, FaEnvelope, FaInstagram } from 'react-icons/fa'; // Import the icons
+import { FaLinkedin, FaTwitter, FaGithub, FaYoutube, FaEnvelope, FaInstagram } from 'react-icons/fa';
 
 
 const MentorProfile = () => {

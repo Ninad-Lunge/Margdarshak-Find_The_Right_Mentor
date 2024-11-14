@@ -6,7 +6,8 @@ const MenteeDashboard = () =>{
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-        navigate('/schedule-meeting');
+        // navigate('/schedule-meeting');
+        navigate('/');
     }
 
     return(

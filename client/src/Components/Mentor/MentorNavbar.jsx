@@ -25,7 +25,7 @@ const Navbar = () => {
         navigate('/');
       };
 
-    const isActive = (path) => location.pathname === path ? 'text-[#F7A221]' : 'text-black';
+    const isActive = (path) => location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
         <nav className="navbar font-sans flex flex-col md:flex-row justify-between px-5 m-5 items-center sticky top-0 left-0 right-0 bg-white z-40">
@@ -45,7 +45,7 @@ const Navbar = () => {
                 <Link to="/mentor-dashboard" className={isActive('/mentor-dashboard')}>Dashboard</Link>
                 <Link to="/manage-slots" className={isActive('/manage-slots')}>Manage Slots</Link>
                 <Link to="/manage-requests" className={isActive('/manage-requests')}>Manage Requests</Link>
-                <Link to="/profile" className={isActive('/profile')}>Profile</Link>
+                <Link to="/mentor-profile" className={isActive('/profile')}>Profile</Link>
                 <button onClick={handleLogout} className={isActive('')}>Log Out</button>
             </div>
         </nav>

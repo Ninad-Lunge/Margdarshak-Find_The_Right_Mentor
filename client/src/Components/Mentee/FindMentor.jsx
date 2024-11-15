@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// import Navbar from './MeNavbar';
+import Navbar from './MenteeNavbar';
 
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -68,19 +68,19 @@ const MenteeBooking = () => {
 
   return (
     <>
-    {/* <Navbar/> */}
+    <Navbar/>
     <ToastContainer
       position="top-right"
-      autoClose={3000}           // Auto close after 3 seconds
-      hideProgressBar={false}     // Show or hide the progress bar
-      closeOnClick                // Close on click
-      pauseOnHover                // Pause on hover
-      draggable   
+      autoClose={3000}
+      hideProgressBar={false}
+      closeOnClick
+      pauseOnHover
+      draggable 
       transition={Slide}  
       className="mt-14"               
     />
-    <div className="py-20">
-      <h1 className="text-3xl font-semibold text-center mb-6">Available Slots for Mentoring</h1>
+    <div className="mt-5">
+      <h1 className="text-2xl font-semibold text-center mb-6 text-[#3B50D5]">Available Slots for Mentoring</h1>
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       {/* Grid layout for available slots */}

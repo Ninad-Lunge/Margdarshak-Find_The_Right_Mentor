@@ -1,90 +1,280 @@
-import React from "react";
-import { FaStar } from 'react-icons/fa';
-import { FaLinkedin, FaTwitter, FaGithub, FaYoutube, FaEnvelope, FaInstagram } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Camera } from 'lucide-react';
 
+const MentorEditProfile = () => {
+  const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    'first-name': '',
+    'last-name': '',
+    email: '',
+    specialization: '',
+    experience: '',
+    bio: '',
+    profileImage: null,
+    linkedinUrl: '',
+    availability: '',
+    hourlyRate: ''
+  });
 
-const MentorProfile = () => {
+  useEffect(() => {
+    // Fetch existing mentor data
+    const fetchMentorData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/mentor-profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setFormData(prev => ({
+            ...prev,
+            'first-name': data.firstName,
+            'last-name': data.lastName,
+            email: data.email,
+            specialization: data.specialization || '',
+            experience: data.experience || '',
+            bio: data.bio || '',
+            linkedinUrl: data.linkedinUrl || '',
+            availability: data.availability || '',
+            hourlyRate: data.hourlyRate || ''
+          }));
+          if (data.profileImageUrl) {
+            setImagePreview(data.profileImageUrl);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching mentor data:', err);
+      }
+    };
+
+    fetchMentorData();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        profileImage: file
+      }));
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach(key => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/update-mentor-profile', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataToSend
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        // Handle success (e.g., show success message, redirect)
+        navigate('/mentor-dashboard');
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err);
+    }
+  };
+
   return (
-    <div>
-      <div className="flex flex-row justify-between rounded-[2px] ml-[120px] mr-[200px] mb-[50px] ">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold mb-6">Edit Profile</h1>
 
-        <div className="item-center border border-black rounded-[3px] w-[190px] mt-[10px] mb-[50px]">
-          {" "}
-          {/*Image and Name */}
-          <div className="w-[100px] h-[100px] bg-gray-300 border border-black rounded-[3px] ml-[45px] mr-[40px] mt-[20px]">
-            {" "}
-            {/*Image */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Image Section */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Profile preview" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Camera size={40} className="text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <label className="absolute bottom-0 right-0 bg-green-500 p-2 rounded-full cursor-pointer hover:bg-green-600 transition-colors">
+                <Camera size={20} className="text-white" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </label>
+            </div>
           </div>
-          <h1 className="text-center m-[10px]">Prof. Sheetal Kale</h1>
-          <h3 className="text-center text-sm m-[10px]">HOD, BIT Wardha</h3>
-          <div className="flex justify-center m-[10px]">
-            {Array(5).fill().map((_, index) => (
-                <FaStar key={index} className="text-yellow-500" />
-            ))}
-        </div>  
-          <button className="m-[10px] ml-[47px] bg-[#4257d7] text-white border border-black rounded-[3px] py-1.5 px-5">
-            Follow
-          </button>
-        </div> {/*Image and name completed here */}
-        
-        <div className="item-center border border-black w-[480px] rounded-[3px] mt-[10px] mb-[50px]">
-        
-        <div className='flex flex-row justify-between ml-[30px] mr-[170px] mt-[20px]'>
-          <div className=''>
-            <h1 className='text-2xl'>20k+</h1>
-            <h3 className='text-xs'>Followers</h3>
+
+          {/* Personal Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-1 text-sm">First Name</label>
+              <input
+                type="text"
+                name="first-name"
+                value={formData['first-name']}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm">Last Name</label>
+              <input
+                type="text"
+                name="last-name"
+                value={formData['last-name']}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
           </div>
-          <div className='ml-[100px]'>
-            <h1 className='text-2xl'>50k+</h1>
-            <h3 className='text-xs'>Mentees</h3>
+
+          {/* Contact Info */}
+          <div>
+            <label className="block mb-1 text-sm">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50"
+              required
+              disabled
+            />
           </div>
-          <div className='ml-[100px]'>
-            <h1 className='text-2xl '>24</h1>
-            <h3 className='text-xs'>Articles</h3>
+
+          {/* Professional Details */}
+          <div>
+            <label className="block mb-1 text-sm">Specialization</label>
+            <input
+              type="text"
+              name="specialization"
+              value={formData.specialization}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
           </div>
-        </div>
 
-        <h1 className="mt-[50px] ml-[30px]">Area of Expertise : </h1>
-        </div>
+          <div>
+            <label className="block mb-1 text-sm">Years of Experience</label>
+            <input
+              type="number"
+              name="experience"
+              value={formData.experience}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
 
-        <div className="item-center mt-[10px] mb-[50px]"> {/* Bahar wala dabba with border black */}
-        <div className="flex flex-col justify-between border border-black rounded-[2px] mb-[10px] ">
-            <h1 className="m-[10px] w-[430px]">Schedule an Online meet : </h1>
-            <h1 className="m-[10px]">Available on - Sunday 4th Aug 2024</h1>
-            <button className="m-[10px] ml-[10px] bg-[#4257d7] text-white border border-black rounded-[3px] py-1.5 px-5">
-            Schedule
-          </button>
-        </div>
+          <div>
+            <label className="block mb-1 text-sm">Bio</label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[100px] resize-vertical"
+              required
+            />
+          </div>
 
-        <div className="flex flex-col justify-between border border-black rounded-[2px]">
-            <h1 className="m-[10px] w-[430px] mb-[25px]">Connect</h1>
-            <div className="flex justify-around mb-[30px]">
-        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-          <FaLinkedin className="text-blue-600" size={30} />
-        </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-          <FaTwitter className="text-blue-400" size={30} />
-        </a>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-          <FaGithub className="text-gray-800" size={30} />
-        </a>
-        <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-          <FaYoutube className="text-red-600" size={30} />
-        </a>
-        <a href="mailto:example@example.com" target="_blank" rel="noopener noreferrer">
-          <FaEnvelope className="text-gray-700" size={30} />
-        </a>
-        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-          <FaInstagram className="text-pink-600" size={30} />
-        </a>
-      </div>
-        </div>
-        </div>
+          <div>
+            <label className="block mb-1 text-sm">LinkedIn URL</label>
+            <input
+              type="url"
+              name="linkedinUrl"
+              value={formData.linkedinUrl}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-1 text-sm">Availability (hours per week)</label>
+              <input
+                type="number"
+                name="availability"
+                value={formData.availability}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm">Hourly Rate ($)</label>
+              <input
+                type="number"
+                name="hourlyRate"
+                value={formData.hourlyRate}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+          </div>
 
+          {/* Submit Button */}
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={() => navigate('/mentor-dashboard')}
+              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default MentorProfile;
+export default MentorEditProfile;

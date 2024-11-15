@@ -189,7 +189,6 @@ const MentorRegister = () =>{
 
                     <p className='mt-1'><span>Looking to join us as a mentee?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleRegister}>Register Now as Mentee</span></p>
                 </div>
-                
             </div>
         </div>
     );

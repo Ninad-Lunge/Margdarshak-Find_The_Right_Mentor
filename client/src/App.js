@@ -12,26 +12,28 @@ import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
+import MentorEditProfile from './Pages/Mentor/MentorProfile.jsx';
 
 function App() {
   return (
     <>
-    <BrowserRouter>
-       <Routes>
-        <Route exact path='/' element={<Home />} />
-        <Route exact path='/home' element={<Home />} />
-        <Route exact path='/login' element={<LoginPage />} />
-        <Route exact path='/mentor-register' element={<MentorRegister />} />
-        <Route exact path='/mentee-register' element={<MenteeRegister />} />
-        <Route exact path='/schedule-meeting' element={<ScheduleMeeting />} />
-        <Route exact path='/mentor-dashboard' element={<MentorDashborad />} />
-        <Route exact path='/mentee-dashboard' element={<MenteeDashboard />} />
-        <Route exact path='/add-slots' element={<MentorAvailability />} />
-        <Route exact path='/mentor-booking' element={<MenteeBooking />} />
-        <Route path='/manage-requests' element={<MentorRequests />} />
-        <Route path='/manage-slots' element={<ManageSlots />} />
-       </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route exact path='/' element={<Home />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/mentor-register' element={<MentorRegister />} />
+          <Route path='/mentee-register' element={<MenteeRegister />} />
+          <Route path='/schedule-meeting' element={<ScheduleMeeting />} />
+          <Route path='/mentor-dashboard' element={<MentorDashborad />} />
+          <Route path='/mentee-dashboard' element={<MenteeDashboard />} />
+          <Route path='/add-slots' element={<MentorAvailability />} />
+          <Route path='/find-mentors' element={<MenteeBooking />} />
+          <Route path='/manage-requests' element={<MentorRequests />} />
+          <Route path='/manage-slots' element={<ManageSlots />} />
+          <Route path='/mentor-profile' element={<MentorEditProfile />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

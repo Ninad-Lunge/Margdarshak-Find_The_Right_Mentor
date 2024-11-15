@@ -28,7 +28,7 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
-        <nav className="navbar font-sans flex flex-col md:flex-row justify-between px-5 m-5 items-center sticky top-0 left-0 right-0 bg-white z-40">
+        <nav className="navbar shadow-lg font-sans flex  mx-auto flex-col md:flex-row justify-between px-10 h-14 items-center sticky top-0 left-0 right-0 bg-white">
             <button 
                 className="md:hidden block focus:outline-none" 
                 onClick={handleToggleMenu}

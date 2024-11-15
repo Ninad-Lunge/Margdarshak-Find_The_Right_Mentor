@@ -125,9 +125,9 @@ const MentorAvailability = () => {
                     <span>Date: {new Date(slot.date).toLocaleDateString()}</span>
                     <span> | Time: {slot.startTime} - {slot.endTime}</span>
                   </div>
-                  <div>
-                    <button onClick={() => handleEdit(slot)} className="bg-yellow-500 px-2 py-1 rounded">Edit</button>
-                    <button onClick={() => handleDelete(slot._id)} className="bg-red-500 px-2 py-1 rounded">Delete</button>
+                  <div className="flex space-x-2">
+                    <button onClick={() => handleEdit(slot)} className="bg-yellow-500 px-2 py-1 text-white rounded">Edit</button>
+                    <button onClick={() => handleDelete(slot._id)} className="bg-red-500 px-2 py-1 text-white rounded">Delete</button>
                   </div>
                 </li>
               ))}

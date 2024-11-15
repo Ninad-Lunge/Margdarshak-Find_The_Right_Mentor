@@ -13,9 +13,16 @@ const meetingRoutes = require('./routes/meetings');
 const loginRoutes = require('./routes/login');
 const slots = require('./routes/availability');
 
-// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -29,7 +36,40 @@ app.use('/api', menteeRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/availability', slots);
+const slotsRoute = require('./routes/slots');
+app.use('/api/slots', slotsRoute);
 
+const resumeRoutes = require('./routes/resume');
+app.use('/api', resumeRoutes);
+
+// OAuth 2 configuration
+const oauth2Client = new google.auth.OAuth2
+(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URL
+);
+
+app.get('/', (req, res) => {
+    res.send('Welcome to the Server');
+});
+
+app.get('/auth', (req, res) => {
+
+    const url = oauth2Client.generateAuthUrl
+    ({
+        access_type: 'offline',
+        scope: scopes
+    });
+    res.redirect(url);
+    }
+);
+
+app.get("/auth/redirect", async (req, res) => {
+
+    const {tokens} = await oauth2Client.getToken(req.query.code);
+    oauth2Client.setCredentials(tokens);
+    res.send('Authentication successful! Please return to the console.');
 app.post('/api/schedule-meet', async (req, res) => {
     const { date, time, mentorName, menteeName, emails } = req.body;
   

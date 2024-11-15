@@ -22,6 +22,10 @@ const Navbar = () => {
       // Add logic to navigate to profile page
       navigate('/profile');
     }
+    else if (text === "Build Resume") {
+      navigate('/resume-builder');
+    }
+
   };
 
   const handleLogout = () => {

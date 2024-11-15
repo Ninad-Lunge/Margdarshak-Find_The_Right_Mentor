@@ -27,7 +27,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(bodyParser.json());
 
 // MongoDB connection
@@ -68,6 +67,9 @@ app.use('/api/auth', loginRoutes);
 
 const slotsRoute = require('./routes/slots');
 app.use('/api/slots', slotsRoute);
+
+const resumeRoutes = require('./routes/resume');
+app.use('/api', resumeRoutes);
 
 // OAuth 2 configuration
 const oauth2Client = new google.auth.OAuth2

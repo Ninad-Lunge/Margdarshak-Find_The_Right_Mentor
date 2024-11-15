@@ -26,21 +26,23 @@ const LoginPage = () => {
         try {
             const response = await axios.post('/api/auth/login', formData);
             if (response.data.success) {
-                // Set isLoggedIn in localStorage
                 localStorage.setItem('isLoggedIn', 'true');
-                
-                // Redirect based on role
+                localStorage.setItem('token', response.data.token);
+
                 if (formData.role === 'Mentor') {
+                    localStorage.setItem('mentorData', JSON.stringify(response.data.mentorData));
                     navigate('/mentor-dashboard');
                 } else {
+                    localStorage.setItem('menteeData', JSON.stringify(response.data.menteeData));
                     navigate('/mentee-dashboard');
                 }
             } else {
                 setError(response.data.message || 'Login failed');
             }
         } catch (error) {
+            console.error("Login error:", error);
             setError('An error occurred. Please try again.');
-        }
+        }    
     };
 
     const toggleRole = () => {
@@ -69,12 +71,12 @@ const LoginPage = () => {
 
                 <div className="toggle-role mb-6">
                     <button 
-                        className={`px-4 py-2 ${formData.role === 'Mentor' ? 'bg-white-500 text-black border border-black' : 'bg-gray-200'} rounded-l-md`}
+                        className={`px-4 py-2 ${formData.role === 'Mentor' ? 'bg-black text-white border' : 'bg-gray-200 text-black'} rounded-l-md`}
                         onClick={toggleRole}>
                         I'm a Mentor
                     </button>
                     <button 
-                        className={`px-4 py-2 ${formData.role === 'Mentee' ? 'bg-white-500 text-black border border-black' : 'bg-gray-200'} rounded-r-md`}
+                        className={`px-4 py-2 ${formData.role === 'Mentee' ? 'bg-black text-white border' : 'bg-gray-200 text-black'} rounded-r-md`}
                         onClick={toggleRole}>
                         I'm a Mentee
                     </button>
@@ -112,7 +114,9 @@ const LoginPage = () => {
 
                     <p>Or</p>
 
-                    <button className="w-[560px] h-[50px] bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black" type="submit">
+                    <button 
+                        className="w-[560px] h-[50px] bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black" 
+                        type="button">
                         Log In with Google
                     </button>
                 </form>

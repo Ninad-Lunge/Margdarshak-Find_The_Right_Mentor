@@ -26,7 +26,7 @@ const MenteeRegister = () => {
     };
 
     const handleLogin = () => {
-        navigate('/Login');
+        navigate('/login');
     };
 
     const handleSubmit = async (e) => {
@@ -41,12 +41,11 @@ const MenteeRegister = () => {
                 },
                 body: JSON.stringify(formData),
             });
-
             if (response.ok) {
-                console.log('Mentee data submitted successfully');
+                const menteeData = await response.json();
+                localStorage.setItem('menteeData', JSON.stringify(menteeData));
+                localStorage.setItem('token', response.data.token);
                 navigate('/mentee-dashboard');
-            } else {
-                console.error('Error submitting mentee data:', response.statusText);
             }
         } catch (err) {
             console.error('Error:', err);

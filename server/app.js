@@ -1,23 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session');
-const passport = require('passport');
-const { Strategy } = require('passport-google-oauth20');
 
-// For Google Calender
-const { google } = require('googleapis');
-const { v4: uuidv4 } = require('uuid');
-const bodyParser = require('body-parser');
-
-// Define the scope of access for the Google Calendar API.
-const scopes = ['https://www.googleapis.com/auth/calendar'];
+const scheduleMeet = require('./middleware/scheduleMeet');
 
 require('dotenv').config();
-
 const app = express();
 
-// Middleware
+const mentorRoutes = require('./routes/mentors');
+const menteeRoutes = require('./routes/mentee');
+const meetingRoutes = require('./routes/meetings');
+const loginRoutes = require('./routes/login');
+const slots = require('./routes/availability');
+
 app.use(cors());
 app.use(express.json());
 app.use(session({
@@ -27,7 +22,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(bodyParser.json());
 
 // MongoDB connection
@@ -35,39 +29,18 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// Passport configuration
-passport.use(new Strategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/api/meetings/auth/callback',
-}, async (accessToken, refreshToken, profile, done) => {
-    // Here you can store the user in your database
-    done(null, profile);
-}));
-
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-    done(null, user);
-});
 
 // Routes
-const mentorRoutes = require('./routes/mentors');
 app.use('/api', mentorRoutes);
-
-const menteeRoutes = require('./routes/mentee');
 app.use('/api', menteeRoutes);
-
-const meetingRoutes = require('./routes/meetings');
 app.use('/api/meetings', meetingRoutes);
-
-const loginRoutes = require('./routes/login');
 app.use('/api/auth', loginRoutes);
-
+app.use('/api/availability', slots);
 const slotsRoute = require('./routes/slots');
 app.use('/api/slots', slotsRoute);
+
+const resumeRoutes = require('./routes/resume');
+app.use('/api', resumeRoutes);
 
 // OAuth 2 configuration
 const oauth2Client = new google.auth.OAuth2
@@ -97,51 +70,32 @@ app.get("/auth/redirect", async (req, res) => {
     const {tokens} = await oauth2Client.getToken(req.query.code);
     oauth2Client.setCredentials(tokens);
     res.send('Authentication successful! Please return to the console.');
+app.post('/api/schedule-meet', async (req, res) => {
+    const { date, time, mentorName, menteeName, emails } = req.body;
+  
+    if (!emails || emails.length !== 2) {
+      return res.status(400).json({ error: 'Both mentor and mentee emails are required' });
     }
-
-);
-
-// OAuth and Google Calendar setup...
-
-app.post('/create-event', async (req, res) => {
-    const event = {
-        summary: 'Meet',
-        location: 'Google Meet',
-        description: req.body.description || "Demo event",
-        start: {
-            dateTime: req.body.start.dateTime,
-            timeZone: 'Asia/Kolkata',
-        },
-        end: {
-            dateTime: req.body.end.dateTime,
-            timeZone: 'Asia/Kolkata',
-        },
-        colorId: 1,
-        conferenceData: {
-            createRequest: {
-                requestId: uuidv4(),
-            }
-        },
-        attendees: req.body.attendees || [],
-    };
-
+  
+    const [menteeEmail, mentorEmail] = emails; // Extract emails from the array
+    
     try {
-        const result = await calendar.events.insert({
-            calendarId: 'primary',
-            auth: oauth2Client,
-            conferenceDataVersion: 1,
-            sendUpdates: 'all',
-            resource: event
-        });
-
-        res.send({
-            status: 200,
-            message: 'Event created',
-            link: result.data.hangoutLink
-        });
-    } catch (err) {
-        res.status(500).send(err.message);
+      const result = await scheduleMeet(date, time, mentorName, menteeName, menteeEmail, mentorEmail);
+  
+      if (result.success) {
+        // If the meet link is generated, return it
+        res.status(200).json({ meetLink: result.meetLink });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error scheduling meet:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
+});  
+
+app.get('/', (req, res) => {
+    res.send('Welcome to the Server');
 });
 
 // Start server

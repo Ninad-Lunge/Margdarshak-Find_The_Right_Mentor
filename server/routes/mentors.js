@@ -52,4 +52,20 @@ router.post('/register-mentor', async (req, res) => {
   }
 });
 
+// GET route to fetch current mentor data
+router.get('/mentors/current', async (req, res) => {
+  try {
+    const mentorId = req.user?.id;
+    if (!mentorId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const mentor = await Mentor.findById(mentorId).select('-password'); // Exclude password from response
+    if (!mentor) return res.status(404).json({ success: false, message: 'Mentor not found' });
+
+    res.status(200).json({ success: true, mentor });
+  } catch (err) {
+    console.error("Error fetching mentor data:", err);
+    res.status(500).json({ success: false, message: 'Server Error', error: err });
+  }
+});
+
 module.exports = router;

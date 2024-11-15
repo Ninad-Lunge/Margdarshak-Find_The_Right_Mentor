@@ -60,7 +60,7 @@ const MentorRegister = () =>{
     };
 
     const handleLogin = () => {
-        navigate('/Login');
+        navigate('/login');
     };
 
     const handleSubmit = async (e) => {
@@ -79,6 +79,9 @@ const MentorRegister = () =>{
 
         if (response.ok) {
             console.log('Mentor application submitted successfully');
+            const mentorData = await response.json();
+            localStorage.setItem('mentorData', JSON.stringify(mentorData));
+            localStorage.setItem('token', response.data.token);
             navigate('/mentor-dashboard');
         } else {
             console.log('Error submitting application');
@@ -245,7 +248,6 @@ const MentorRegister = () =>{
 
                     <p className='mt-1'><span>Looking to join us as a mentee?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleRegister}>Register Now as Mentee</span></p>
                 </div>
-                
             </div>
         </div>
     );

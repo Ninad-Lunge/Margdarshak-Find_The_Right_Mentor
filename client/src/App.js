@@ -8,6 +8,7 @@ import MentorRegister from './Pages/MentorRegister.jsx';
 import ScheduleMeeting from './Pages/Mentee/ScheduleMeetingWithMentor.jsx';
 import MentorDashborad from './Pages/Mentor/MentorDashboard.jsx';
 import MenteeDashboard from './Pages/Mentee/MenteeDashBoard.jsx';
+import ResumeBuilder from './Pages/Mentee/ResumeBuilder.jsx';
 import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
@@ -32,6 +33,7 @@ function App() {
           <Route path='/manage-requests' element={<MentorRequests />} />
           <Route path='/manage-slots' element={<ManageSlots />} />
           <Route path='/mentor-profile' element={<MentorEditProfile />} />
+          <Route exact path='/resume-builder' element={<ResumeBuilder />} />
         </Routes>
       </BrowserRouter>
     </>

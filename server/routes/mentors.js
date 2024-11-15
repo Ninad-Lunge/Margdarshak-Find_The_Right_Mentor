@@ -7,10 +7,11 @@ const saltRounds = 10;
 
 // POST route to add mentor data
 router.post('/register-mentor', async (req, res) => {
-  const { firstName, lastName, email, password, jobTitle, company, location, industry, skills, bio, linkedin, twitter, website, introVideo, featuredArticles, whyMentor, greatestAchievement } = req.body;
+  const { firstName, lastName, email, password, jobTitle, company, location, industrywork, skills, bio, linkedin, twitter, website, introVideo, featuredArticles, whyMentor, greatestAchievement, industry, companytype, noofmentoredstudent, domain, subdomain, noofprojects, yearofexperience, technologies, positionofmentors } = req.body;
 
   try {
-      // Hash the password
+    console.log("in try catch");
+      // Hash the password,,yearofexperience
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create new mentor entry with hashed password
@@ -22,7 +23,7 @@ router.post('/register-mentor', async (req, res) => {
           jobTitle,
           company,
           location,
-          industry,
+          industrywork,
           skills,
           bio,
           linkedin,
@@ -32,9 +33,19 @@ router.post('/register-mentor', async (req, res) => {
           featuredArticles,
           whyMentor,
           greatestAchievement,
+            industry,
+            companytype,
+            noofmentoredstudent,
+            domain,
+            subdomain,
+            noofprojects,
+            yearofexperience,
+            technologies,
+            positionofmentors
       });
 
       const savedMentor = await newMentor.save();
+      console.log("save data");
       res.status(201).json(savedMentor);
   } catch (err) {
       res.status(500).json({ message: 'Server Error', error: err });

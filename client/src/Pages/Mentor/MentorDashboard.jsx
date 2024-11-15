@@ -48,7 +48,7 @@ const MentorDashboard = () => {
 
       <div className="grid grid-cols-4 mt-20 mx-12 gap-6">
         {/* Sidebar */}
-        <div className="col-span-1 border border-black rounded-md px-2 py-16 mx-6">
+        <div className="col-span-1 border border-black rounded-md px-2 py-16 ">
           <img src="" alt="" className="mentor-img border border-black rounded-full h-32 w-32 mx-auto" />
           <h1 className="mentor-name mt-10 mx-auto text-center">Replace with name</h1>
         </div>
@@ -68,7 +68,7 @@ const MentorDashboard = () => {
         </div>
 
         {/* Community Section */}
-        <div className="community col-span-2 border border-black rounded-md h-60 flex flex-col">
+        <div className="community col-span-2 border border-black rounded-md px-2 h-60 flex flex-col">
           Community
           <button className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto">
             Create a new Community

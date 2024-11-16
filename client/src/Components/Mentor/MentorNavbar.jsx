@@ -45,7 +45,7 @@ const Navbar = () => {
                 <Link to="/mentor-dashboard" className={isActive('/mentor-dashboard')}>Dashboard</Link>
                 <Link to="/manage-slots" className={isActive('/manage-slots')}>Manage Slots</Link>
                 <Link to="/manage-requests" className={isActive('/manage-requests')}>Manage Requests</Link>
-                <Link to="/mentor-profile" className={isActive('/profile')}>Profile</Link>
+                <Link to="/mentor-profile" className={isActive('/mentor-profile')}>Profile</Link>
                 <button onClick={handleLogout} className={isActive('')}>Log Out</button>
             </div>
         </nav>

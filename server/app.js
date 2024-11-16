@@ -2,27 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const scheduleMeet = require('./middleware/scheduleMeet');
-
 require('dotenv').config();
 const app = express();
 
-const mentorRoutes = require('./routes/mentors');
+const mentorRoutes = require('./routes/mentor');
 const menteeRoutes = require('./routes/mentee');
 const meetingRoutes = require('./routes/meetings');
 const loginRoutes = require('./routes/login');
 const slots = require('./routes/availability');
+const resumeRoutes = require('./routes/resume');
+const scheduleRoutes = require('./routes/scheduleMeet');
 
 app.use(cors());
 app.use(express.json());
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -31,68 +23,16 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 
 // Routes
-app.use('/api', mentorRoutes);
-app.use('/api', menteeRoutes);
+app.use('/api/mentor', mentorRoutes);
+app.use('/api/mentee', menteeRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/availability', slots);
-const slotsRoute = require('./routes/slots');
-app.use('/api/slots', slotsRoute);
-
-const resumeRoutes = require('./routes/resume');
 app.use('/api', resumeRoutes);
+app.use('/api', scheduleRoutes);
 
-// OAuth 2 configuration
-const oauth2Client = new google.auth.OAuth2
-(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URL
-);
-
-app.get('/', (req, res) => {
-    res.send('Welcome to the Server');
-});
-
-app.get('/auth', (req, res) => {
-
-    const url = oauth2Client.generateAuthUrl
-    ({
-        access_type: 'offline',
-        scope: scopes
-    });
-    res.redirect(url);
-    }
-);
-
-app.get("/auth/redirect", async (req, res) => {
-
-    const {tokens} = await oauth2Client.getToken(req.query.code);
-    oauth2Client.setCredentials(tokens);
-    res.send('Authentication successful! Please return to the console.');
-app.post('/api/schedule-meet', async (req, res) => {
-    const { date, time, mentorName, menteeName, emails } = req.body;
-  
-    if (!emails || emails.length !== 2) {
-      return res.status(400).json({ error: 'Both mentor and mentee emails are required' });
-    }
-  
-    const [menteeEmail, mentorEmail] = emails; // Extract emails from the array
-    
-    try {
-      const result = await scheduleMeet(date, time, mentorName, menteeName, menteeEmail, mentorEmail);
-  
-      if (result.success) {
-        // If the meet link is generated, return it
-        res.status(200).json({ meetLink: result.meetLink });
-      } else {
-        res.status(500).json({ error: result.error });
-      }
-    } catch (error) {
-      console.error('Error scheduling meet:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-});  
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Server');

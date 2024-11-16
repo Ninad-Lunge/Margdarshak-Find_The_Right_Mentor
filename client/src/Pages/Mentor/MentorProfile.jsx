@@ -1,280 +1,186 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Camera } from 'lucide-react';
+import Navbar from '../../Components/Mentor/MentorNavbar';
 
-const MentorEditProfile = () => {
-  const navigate = useNavigate();
-  const [imagePreview, setImagePreview] = useState(null);
-  
+const MentorProfile = () => {
+  const [mentorData, setMentorData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    'first-name': '',
-    'last-name': '',
+    firstName: '',
+    lastName: '',
     email: '',
-    specialization: '',
-    experience: '',
+    jobTitle: '',
+    company: '',
+    location: '',
+    industry: '',
+    skills: '',
     bio: '',
-    profileImage: null,
-    linkedinUrl: '',
-    availability: '',
-    hourlyRate: ''
+    linkedin: '',
+    twitter: '',
+    website: '',
   });
 
   useEffect(() => {
-    // Fetch existing mentor data
+    // Fetch mentor profile data
     const fetchMentorData = async () => {
+      const token = localStorage.getItem('token');
+      const mentorId = localStorage.getItem('mentorId');
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/mentor-profile', {
+        const response = await fetch(`/api/mentor/${mentorId}`, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setFormData(prev => ({
-            ...prev,
-            'first-name': data.firstName,
-            'last-name': data.lastName,
-            email: data.email,
-            specialization: data.specialization || '',
-            experience: data.experience || '',
-            bio: data.bio || '',
-            linkedinUrl: data.linkedinUrl || '',
-            availability: data.availability || '',
-            hourlyRate: data.hourlyRate || ''
-          }));
-          if (data.profileImageUrl) {
-            setImagePreview(data.profileImageUrl);
-          }
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
         }
-      } catch (err) {
-        console.error('Error fetching mentor data:', err);
+
+        const result = await response.json();
+
+        if (result.success) {
+          setMentorData(result.mentor);
+          setFormData(result.mentor);
+        } else {
+          console.error(result.message);
+        }
+      } catch (error) {
+        console.error('Error fetching mentor profile:', error);
       }
     };
 
     fetchMentorData();
   }, []);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        profileImage: file
-      }));
-      
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach(key => {
-        formDataToSend.append(key, formData[key]);
-      });
+    const token = localStorage.getItem('token');
+    const mentorId = localStorage.getItem('mentorId');
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/update-mentor-profile', {
+    try {
+      const response = await fetch(`/api/mentor/${mentorId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: formDataToSend
+        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        const updatedData = await response.json();
-        // Handle success (e.g., show success message, redirect)
-        navigate('/mentor-dashboard');
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
       }
-    } catch (err) {
-      console.error('Error updating profile:', err);
+
+      const result = await response.json();
+
+      if (result.success) {
+        setMentorData(result.mentor);
+        setIsEditing(false); // Exit edit mode
+      } else {
+        console.error(result.message);
+      }
+    } catch (error) {
+      console.error('Error updating mentor profile:', error);
     }
   };
 
+  if (!mentorData) {
+    return <p className="text-center text-gray-500">Loading...</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold mb-6">Edit Profile</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Profile Image Section */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Profile preview" 
-                    className="w-full h-full object-cover"
+    <>
+      <Navbar />
+      <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-lg">
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">
+          Mentor Profile
+        </h1>
+        {isEditing ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {Object.keys(formData).map((key) =>
+              key !== '_id' ? (
+                <div key={key} className="flex flex-col">
+                  <label
+                    htmlFor={key}
+                    className="text-gray-700 font-medium mb-1"
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}:
+                  </label>
+                  <input
+                    type="text"
+                    name={key}
+                    value={formData[key]}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Camera size={40} className="text-gray-400" />
-                  </div>
-                )}
-              </div>
-              <label className="absolute bottom-0 right-0 bg-green-500 p-2 rounded-full cursor-pointer hover:bg-green-600 transition-colors">
-                <Camera size={20} className="text-white" />
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Personal Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-1 text-sm">First Name</label>
-              <input
-                type="text"
-                name="first-name"
-                value={formData['first-name']}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm">Last Name</label>
-              <input
-                type="text"
-                name="last-name"
-                value={formData['last-name']}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <label className="block mb-1 text-sm">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50"
-              required
-              disabled
-            />
-          </div>
-
-          {/* Professional Details */}
-          <div>
-            <label className="block mb-1 text-sm">Specialization</label>
-            <input
-              type="text"
-              name="specialization"
-              value={formData.specialization}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm">Years of Experience</label>
-            <input
-              type="number"
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm">Bio</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[100px] resize-vertical"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm">LinkedIn URL</label>
-            <input
-              type="url"
-              name="linkedinUrl"
-              value={formData.linkedinUrl}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-1 text-sm">Availability (hours per week)</label>
-              <input
-                type="number"
-                name="availability"
-                value={formData.availability}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm">Hourly Rate ($)</label>
-              <input
-                type="number"
-                name="hourlyRate"
-                value={formData.hourlyRate}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => navigate('/mentor-dashboard')}
-              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
+                </div>
+              ) : null
+            )}
             <button
               type="submit"
-              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+              className="w-full bg-blue-500 text-white font-medium py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               Save Changes
             </button>
+          </form>
+        ) : (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-700">
+                {mentorData.firstName} {mentorData.lastName}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(mentorData).map(([key, value]) =>
+                key !== '_id' ? (
+                  <div key={key} className="bg-white p-4 rounded-md shadow">
+                    <p className="text-sm font-medium text-gray-500">
+                      {key.charAt(0).toUpperCase() + key.slice(1)}:
+                    </p>
+                    <p className="text-gray-700 overflow-hidden">
+                      {value &&
+                      (key.includes('linkedin') ||
+                        key.includes('twitter') ||
+                        key.includes('website')) ? (
+                        <a
+                          href={value}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </a>
+                      ) : (
+                        value || 'N/A'
+                      )}
+                    </p>
+                  </div>
+                ) : null
+              )}
+            </div>
+            <button
+              onClick={handleEditToggle}
+              className="mt-6 w-full bg-green-500 text-white font-medium py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+            >
+              Edit Profile
+            </button>
           </div>
-        </form>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
-export default MentorEditProfile;
+export default MentorProfile;

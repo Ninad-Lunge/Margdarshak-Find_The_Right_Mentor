@@ -6,8 +6,8 @@ const MenteeRegister = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        'first-name': '',
-        'last-name': '',
+        firstName : '',
+        lastName : '',
         email: '',
         password: '',
         role: 'Mentee',
@@ -17,7 +17,7 @@ const MenteeRegister = () => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: value,
         });
     };
 
@@ -29,23 +29,31 @@ const MenteeRegister = () => {
         navigate('/login');
     };
 
+    const handleGoogleSignUp = () => {
+        console.log('Google Sign-Up functionality not implemented yet.');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Form Data Submitted: ', formData);
 
         try {
-            const response = await fetch('/api/register-mentee', {
+            const response = await fetch('/api/mentee/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
+
             if (response.ok) {
                 const menteeData = await response.json();
                 localStorage.setItem('menteeData', JSON.stringify(menteeData));
-                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('menteeId', menteeData._id);
+                localStorage.setItem('token', menteeData.token);
                 navigate('/mentee-dashboard');
+            } else {
+                console.error('Failed to register:', response.statusText);
             }
         } catch (err) {
             console.error('Error:', err);
@@ -66,10 +74,10 @@ const MenteeRegister = () => {
                 <form onSubmit={handleSubmit} className="space-y-4 flex flex-col items-center">
                     <div className="form-group">
                         <label className="block mb-1 text-sm">First Name</label>
-                        <input 
+                        <input
                             type="text"
-                            name="first-name"
-                            value={formData['first-name']}
+                            name="firstName"
+                            value={formData.firstName}
                             onChange={handleChange}
                             className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
@@ -77,10 +85,10 @@ const MenteeRegister = () => {
                     </div>
                     <div className="form-group">
                         <label className="block mb-1 text-sm">Last Name</label>
-                        <input 
+                        <input
                             type="text"
-                            name="last-name"
-                            value={formData['last-name']}
+                            name="lastName"
+                            value={formData.lastName}
                             onChange={handleChange}
                             className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
@@ -88,7 +96,7 @@ const MenteeRegister = () => {
                     </div>
                     <div className="form-group">
                         <label className="block mb-1 text-sm">Enter your Email</label>
-                        <input 
+                        <input
                             type="email"
                             name="email"
                             value={formData.email}
@@ -99,7 +107,7 @@ const MenteeRegister = () => {
                     </div>
                     <div className="form-group">
                         <label className="block mb-1 text-sm">Enter your Password</label>
-                        <input 
+                        <input
                             type="password"
                             name="password"
                             value={formData.password}
@@ -109,23 +117,46 @@ const MenteeRegister = () => {
                         />
                     </div>
 
-                    <button className="w-[560px] h-[50px] bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors" type="submit">
+                    <button
+                        className="w-[560px] h-[50px] bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                        type="submit"
+                    >
                         Sign Up
                     </button>
 
                     <p>Or</p>
 
-                    <button className="w-[560px] h-[50px] bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black" type="submit">
+                    <button
+                        className="w-[560px] h-[50px] bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black"
+                        type="button"
+                        onClick={handleGoogleSignUp}
+                    >
                         Sign Up with Google
                     </button>
                 </form>
 
-                <p className='mt-2'><span>Already have an account?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleLogin}>Login</span></p>
+                <p className="mt-2">
+                    <span>Already have an account?</span>
+                    <span
+                        className="ms-2 text-green-500 cursor-pointer"
+                        onClick={handleLogin}
+                    >
+                        Login
+                    </span>
+                </p>
 
-                <p className='mt-2'><span>Looking to join us as a mentor?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleApply}>Apply Now</span></p>
+                <p className="mt-2">
+                    <span>Looking to join us as a mentor?</span>
+                    <span
+                        className="ms-2 text-green-500 cursor-pointer"
+                        onClick={handleApply}
+                    >
+                        Apply Now
+                    </span>
+                </p>
             </div>
         </div>
     );
-}
+};
 
 export default MenteeRegister;

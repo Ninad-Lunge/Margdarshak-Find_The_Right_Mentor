@@ -13,7 +13,7 @@ import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
-import MentorEditProfile from './Pages/Mentor/MentorProfile.jsx';
+import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 
 function App() {
   return (
@@ -32,7 +32,7 @@ function App() {
           <Route path='/find-mentors' element={<MenteeBooking />} />
           <Route path='/manage-requests' element={<MentorRequests />} />
           <Route path='/manage-slots' element={<ManageSlots />} />
-          <Route path='/mentor-profile' element={<MentorEditProfile />} />
+          <Route path='/mentor-profile' element={<MentorProfile />} />
           <Route exact path='/resume-builder' element={<ResumeBuilder />} />
         </Routes>
       </BrowserRouter>

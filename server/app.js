@@ -29,7 +29,7 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/availability', slots);
 app.use('/api', resumeRoutes);
-app.use('/api', scheduleRoutes);
+// app.use('/api', scheduleRoutes);
 
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);

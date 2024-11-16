@@ -33,23 +33,36 @@ const MentorAvailability = () => {
         toast.error('Please fill in all fields');
         return;
       }
-
-      const formattedDate = new Date(date).toISOString().slice(0, 10);
+  
+      if (new Date(date) < new Date().setHours(0, 0, 0, 0)) {
+        toast.error('Cannot add slots for past dates');
+        return;
+      }
   
       const token = localStorage.getItem('token');
       const response = await axios.post(
         '/api/availability/add',
-        { date: formattedDate, startTime, endTime },
+        { 
+          date,  // Send the date directly
+          startTime, 
+          endTime,
+          status: 'available' // Explicitly set status
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setAvailabilityList([...availabilityList, response.data]);
-      toast.success('New Availability Added Successfully!');
-  
-      setDate('');
-      setStartTime('');
-      setEndTime('');
+      
+      if (response.data.success) {
+        setAvailabilityList([...availabilityList, response.data.data]);
+        toast.success('New Availability Added Successfully!');
+        
+        // Clear form
+        setDate('');
+        setStartTime('');
+        setEndTime('');
+      }
     } catch (error) {
-      toast.error('Failed to add availability');
+      console.error('Add availability error:', error.response || error);
+      toast.error(error.response?.data?.error || 'Failed to add availability');
     }
   };
 
@@ -135,24 +148,24 @@ const MentorAvailability = () => {
 
   return (
     <>
-      <div className="mt-8 container mx-auto">
+      <div className="mt-4 container mx-auto">
         <ToastContainer position="top-right" autoClose={3000} closeOnClick pauseOnHover transition={Slide} />
 
-        <h2 className="text-3xl font-semibold mb-6 text-center text-blue-600">Manage Your Availability</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-blue-600">Manage Your Availability</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-5">
           {/* Add/Edit Slot Section */}
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold mb-6 text-center text-gray-700">
               {editingSlot ? 'Edit Slot' : 'Add New Slot'}
             </h3>
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-2">
               <label className="font-medium text-gray-600">Date</label>
               <input 
                 type="date" 
                 value={date} 
                 onChange={(e) => setDate(e.target.value)} 
-                className="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
                 required
               />
 
@@ -161,7 +174,7 @@ const MentorAvailability = () => {
                 type="time" 
                 value={startTime} 
                 onChange={(e) => setStartTime(e.target.value)} 
-                className="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
                 required
               />
 
@@ -170,7 +183,7 @@ const MentorAvailability = () => {
                 type="time" 
                 value={endTime} 
                 onChange={(e) => setEndTime(e.target.value)} 
-                className="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" 
                 required
               />
 
@@ -199,7 +212,7 @@ const MentorAvailability = () => {
           </div>
 
           {/* Availability List Section */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg col-span-2">
             <h3 className="text-xl font-semibold mb-6 text-center text-gray-700">Your Availability</h3>
             {error && <p className="text-red-500">{error}</p>}
             <ul className="space-y-4">

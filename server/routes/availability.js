@@ -15,22 +15,41 @@ router.post(
     body('endTime').isString().notEmpty().withMessage('End time is required'),
   ],
   async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const { date, startTime, endTime } = req.body;
       const mentorId = req.user.id;
 
-      const newSlot = new Availability({ mentorId, date, startTime, endTime });
-      await newSlot.save();
+      // Create new slot with explicit status
+      const newSlot = new Availability({
+        mentorId,
+        date: new Date(date),
+        startTime,
+        endTime,
+        status: 'available'
+      });
 
-      res.status(201).json({ success: true, data: newSlot, message: 'Slot added successfully' });
+      await newSlot.save();
+      
+      // Populate mentor details before sending response
+      const populatedSlot = await Availability.findById(newSlot._id)
+        .populate('mentorId', 'firstName lastName industrywork');
+
+      res.status(201).json({
+        success: true,
+        data: populatedSlot,
+        message: 'Slot added successfully'
+      });
     } catch (error) {
       console.error('Error adding availability slot:', error);
-      res.status(500).json({ success: false, error: 'Failed to add availability slot' });
+      res.status(500).json({
+        success: false,
+        error: 'Failed to add availability slot'
+      });
     }
   }
 );
@@ -75,21 +94,22 @@ router.get('/mentorslot', verifyToken, async (req, res) => {
 // Fetch all available slots (mentee view)
 router.get('/mentor', verifyToken, async (req, res) => {
   try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const mentorSlots = await Availability.find({ 
       status: 'available',
-      date: { $gte: new Date() } // Only show future dates
+      date: { $gte: today }
     })
-      .populate('mentorId', 'firstName lastName expertise')
-      .populate('menteeId', 'firstName lastName')
-      .sort({ date: 1, startTime: 1 }) // Sort by date and time
-      .lean();
+    .populate('mentorId', 'firstName lastName industrywork')
+    .sort({ date: 1, startTime: 1 })
+    .lean();
 
-    // Format dates and add formatted time for client
     const formattedSlots = mentorSlots.map(slot => ({
       ...slot,
       formattedDate: new Date(slot.date).toLocaleDateString(),
-      formattedStartTime: slot.startTime,
-      formattedEndTime: slot.endTime
+      startTime: slot.startTime,
+      endTime: slot.endTime
     }));
 
     res.status(200).json(formattedSlots);
@@ -146,6 +166,19 @@ router.get('/booked', verifyToken, async (req, res) => {
     res.json(bookedSlots);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching booked slots', error: error.message });
+  }
+});
+
+// Fetch Confirmed slots
+router.get('/confirmed', verifyToken, async (req, res) => {
+  try {
+    const bookedSlots = await Availability.find({
+      mentorId: req.user.id,
+      status: 'confirmed'
+    }).populate('mentorId menteeId');
+    res.json(bookedSlots);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fecthing confirmed slots', error: error.message });
   }
 });
 

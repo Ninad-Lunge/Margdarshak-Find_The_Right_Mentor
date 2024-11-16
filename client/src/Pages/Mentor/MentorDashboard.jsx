@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Mentor/MentorNavbar';
 import 'react-time-picker/dist/TimePicker.css';
+import logo from '../../Assets/MentorHands.png';
 
 const MentorDashboard = () => {
   const navigate = useNavigate();
@@ -45,10 +46,10 @@ const MentorDashboard = () => {
   }
 
   return (
-    <div className="mentor">
+    <div className="mentor min-h-screen bg-gray-50">
       <Navbar />
-
-      <div className="grid grid-cols-4 mt-4 mx-12 gap-6">
+  
+      <div className="grid grid-cols-1 lg:grid-cols-4 mt-6 mx-6 gap-6">
         {/* Sidebar */}
         <div className="col-span-1 border border-black rounded-md px-2 py-16 mx-6">
           <img
@@ -59,6 +60,11 @@ const MentorDashboard = () => {
           <h1 className="mentor-name mt-10 mx-auto text-center">
             {mentorData.firstName} {mentorData.lastName}
           </h1>
+          <p className="text-center text-gray-600">Industry: Technology</p>
+          <p className="text-center text-gray-600">Location: New York</p>
+          <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block">
+            Edit Profile
+          </button>
         </div>
 
         {/* Stats Section */}
@@ -68,16 +74,21 @@ const MentorDashboard = () => {
         </div>
 
         {/* Meetings Section */}
-        <div className="meetings col-span-1 border border-black rounded-md flex flex-col">
+        <div className="col-span-1 bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-800">Meetings</h2>
           <button
             onClick={handleNavigation}
-            className="add-slots border border-black px-4 py-2 self-center mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1"
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
           >
-            Add Slots
+            Add Availability
           </button>
-          <div className="meets self-center mt-4">Upcoming Meetings</div>
+          <h3 className="mt-6 text-gray-800 font-medium">Upcoming Meetings</h3>
+          <ul className="mt-2 space-y-2">
+            <li className="text-gray-600 text-sm">🌟 Career Guidance - 2 PM</li>
+            <li className="text-gray-600 text-sm">🌟 Mock Interview - 4 PM</li>
+          </ul>
         </div>
-
+  
         {/* Community Section */}
         <div className="community col-span-2 border border-black rounded-md h-60 flex flex-col">
           <h2 className="text-center mt-2 font-bold">Community</h2>
@@ -87,7 +98,7 @@ const MentorDashboard = () => {
             Create a new Community
           </button>
         </div>
-
+  
         {/* Workshops Section */}
         <div className="workshops col-span-2 border border-black rounded-md h-60 flex flex-col">
           <h2 className="text-center mt-2 font-bold">Workshops</h2>

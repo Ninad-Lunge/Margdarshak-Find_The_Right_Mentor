@@ -15,7 +15,7 @@ const MentorRegister = () => {
         jobTitle: '',
         company: '',
         location: '',
-        industry: '',
+        industrywork: '',
         skills: '',
         bio: '',
         linkedin: '',
@@ -24,7 +24,18 @@ const MentorRegister = () => {
         introVideo: '',
         featuredArticles: '',
         whyMentor: '',
-        greatestAchievement: ''
+        greatestAchievement: '',
+
+        //for recommendation engine
+        industry:'',
+        companytype:'',
+        noofmentoredstudent:'',
+        domain:'',
+        subdomain:'',
+        noofprojects:'',
+        yearofexperience:'',
+        technologies:'',
+        positionofmentors:''
     });
 
     const handleChange = (e) => {
@@ -59,8 +70,11 @@ const MentorRegister = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            
+            body: JSON.stringify(formData)
+            
         });
+        console.log(formData)
 
         if (response.ok) {
             console.log('Mentor application submitted successfully');

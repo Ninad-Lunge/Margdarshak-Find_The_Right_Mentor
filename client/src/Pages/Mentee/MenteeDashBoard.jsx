@@ -11,20 +11,20 @@ const MenteeDashboard = () =>{
     }
 
     return(
-        <div className="menteeDashoard">
+        <div className="menteeDashoard bg-gray-50">
             <Navbar />
 
-            <div className="flex flex-col px-10 gap-4">
-                <div className="upcoming-meetings h-64 border border-black rounded-md">
-                    Upcomming Meetings
+            <div className="grid grid-cols-3 px-10 gap-4 mt-4">
+                <div className="flex flex-col col-span-2 gap-y-4">
+                    <div className="upcoming-meetings h-64 shadow rounded-md bg-white">
+                        <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+                    </div>
+                    <div className="recommendations col-span-3 h-72 shadow rounded-md bg-white">
+                        <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Recommendations</h3>
+                    </div>
                 </div>
-                <div className="grid grid-cols-4 gap-x-4">
-                    <div className="recommendations col-span-3 h-96 border border-black rounded-md">
-                        Recommendations
-                    </div>
-                    <div className="notifications col-span-1 h-96 border border-black rounded-md">
-                        Notifications
-                    </div>
+                <div className="notifications col-span-1 h-full shadow rounded-md bg-white">
+                    <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Notifications</h3>
                 </div>
             </div>
         </div>

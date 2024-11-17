@@ -101,10 +101,10 @@ const MentorProfile = () => {
   }
 
   return (
-    <>
+    <div className='bg-gray-50'>
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-lg">
-        <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">
+      <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-lg mt-2">
+        <h1 className="text-2xl font-semibold text-blue-600 text-center mb-4">
           Mentor Profile
         </h1>
         {isEditing ? (
@@ -179,7 +179,7 @@ const MentorProfile = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

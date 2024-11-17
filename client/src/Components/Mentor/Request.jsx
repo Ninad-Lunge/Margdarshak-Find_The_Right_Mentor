@@ -16,7 +16,7 @@ const MentorRequests = () => {
 
   const openGoogleAuthPopup = () => {
     try {
-      const width = 500;
+      const width = 800;
       const height = 600;
       const left = window.innerWidth / 2 - width / 2;
       const top = window.innerHeight / 2 - height / 2;
@@ -176,7 +176,7 @@ const MentorRequests = () => {
         className="mt-14"
       />
 
-      <div className="container mx-auto px-10">
+      <div className="container mx-auto px-10 mt-4">
         <h2 className="text-2xl font-semibold text-center mb-4 text-[#3B50D5]">
           Mentee's Request
         </h2>

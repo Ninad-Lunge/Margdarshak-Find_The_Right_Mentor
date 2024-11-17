@@ -22,12 +22,14 @@ const MenteeBooking = () => {
         setError('No authentication token found. Please log in.');
         return;
       }
-
+  
       const response = await axios.get('/api/availability/mentor', {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (Array.isArray(response.data)) {
+        // Add some console logging for debugging
+        console.log('Fetched slots:', response.data);
         setAvailableSlots(response.data);
       } else {
         console.error('Unexpected response format:', response.data);
@@ -127,11 +129,11 @@ const MenteeBooking = () => {
               >
                 <div className="mb-4">
                   <p className="text-lg font-semibold text-gray-800">
-                    Mentor: {slot.mentorId?.firstName || 'Not specified'}
+                    {slot.mentorId?.firstName || 'Not specified'}
                     {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
                   </p>
                   <p className="text-gray-600">
-                    Expertise: {slot.mentorId?.jobTitle || 'Not specified'}
+                    Expertise: {slot.mentorId?.industrywork || 'Not specified'}
                   </p>
                 </div>
                 

@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Mentor/MentorNavbar';
 import 'react-time-picker/dist/TimePicker.css';
-import logo from '../../Assets/MentorHands.png';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MentorDashboard = () => {
+  const [confirmedSlots, setConfirmedSlots] = useState([]);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const [mentorData, setMentorData] = useState(() => {
@@ -41,6 +45,37 @@ const MentorDashboard = () => {
     navigate('/add-slots');
   };
 
+  useEffect(() => {
+    fetchConfirmedSlots();
+  }, []);
+
+  const fetchConfirmedSlots = async () => {
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No authentication token found. Please log in.');
+        return;
+      }
+
+      const response = await axios.get('/api/availability/confirmed', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if(Array.isArray(response.data)) {
+        setConfirmedSlots(response.data);
+      } else {
+        console.error('Unexpected response format:', response.data);
+        setError('Invalid data format received from server');
+      }
+    } catch (error) {
+      console.error('Error details:', error.response || error);
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to load available slots';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
+  };
+
   if (!mentorData) {
     return <div>Loading mentor data...</div>;
   }
@@ -49,9 +84,9 @@ const MentorDashboard = () => {
     <div className="mentor min-h-screen bg-gray-50">
       <Navbar />
   
-      <div className="grid grid-cols-1 lg:grid-cols-4 mt-6 mx-6 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
         {/* Sidebar */}
-        <div className="col-span-1 border border-black rounded-md px-2 py-16 mx-6">
+        <div className="col-span-1 px-2 py-8 mx-6 bg-white shadow rounded-lg">
           <img
             src={mentorData.profileImage || '/default-profile.png'}
             alt="Mentor Profile"
@@ -68,29 +103,64 @@ const MentorDashboard = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="stats col-span-2 border border-black rounded-md">
-          <h2 className="text-center mt-2 font-bold">Your Stats</h2>
+        <div className="stats col-span-2 bg-white shadow rounded-lg">
+          <h2 className="text-center mt-2 font-semibold">Your Stats</h2>
           {/* Add relevant stats here */}
         </div>
 
         {/* Meetings Section */}
-        <div className="col-span-1 bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-800">Meetings</h2>
+        <div className="col-span-1 bg-white shadow rounded-lg p-4">
+          <h2 className="text-center font-semiold">Meetings</h2>
           <button
             onClick={handleNavigation}
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
           >
             Add Availability
           </button>
-          <h3 className="mt-6 text-gray-800 font-medium">Upcoming Meetings</h3>
-          <ul className="mt-2 space-y-2">
-            <li className="text-gray-600 text-sm">🌟 Career Guidance - 2 PM</li>
-            <li className="text-gray-600 text-sm">🌟 Mock Interview - 4 PM</li>
-          </ul>
+          <h3 className="mt-2 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+          <div className="space-y-2">
+            {confirmedSlots.map((slot, index) => (
+              <div 
+                key={index} 
+                className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
+              >
+                <div className="mb-2">
+                  <h3 className="text-md font-medium">
+                    Mentee: {slot.mentorId?.firstName || 'Not specified'}
+                    {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-3">
+                  <div className="space-y-1 text-gray-600 col-span-2">
+                    <div className="flex items-center space-x-1 text-sm">
+                      <span className="font-medium">Date:</span>
+                      <span>{new Date(slot.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-sm">
+                      <span className="font-medium">Time:</span>
+                      <span>{slot.startTime} - {slot.endTime}</span>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <a 
+                        href={slot.meetLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-blue-500 text-sm hover:text-blue-600 p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
+                      >
+                        Join Meet
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
         </div>
   
         {/* Community Section */}
-        <div className="community col-span-2 border border-black rounded-md h-60 flex flex-col">
+        <div className="community col-span-2 bg-white shadow rounded-lg h-60 flex flex-col">
           <h2 className="text-center mt-2 font-bold">Community</h2>
           <button
             className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
@@ -100,7 +170,7 @@ const MentorDashboard = () => {
         </div>
   
         {/* Workshops Section */}
-        <div className="workshops col-span-2 border border-black rounded-md h-60 flex flex-col">
+        <div className="workshops col-span-2 bg-white shadow rounded-lg h-60 flex flex-col">
           <h2 className="text-center mt-2 font-bold">Workshops</h2>
           <button
             className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"

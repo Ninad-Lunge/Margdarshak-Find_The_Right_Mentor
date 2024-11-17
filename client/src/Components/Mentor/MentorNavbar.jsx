@@ -28,7 +28,7 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
-        <nav className="navbar shadow-lg font-sans flex  mx-auto flex-col md:flex-row justify-between px-10 h-14 items-center sticky top-0 left-0 right-0 bg-white">
+        <nav className="navbar flex flex-col md:flex-row justify-between px-10 h-14 items-center sticky top-0 left-0 right-0 bg-white mx-2 mt-2 rounded-md shadow-sm" >
             <button 
                 className="md:hidden block focus:outline-none" 
                 onClick={handleToggleMenu}
@@ -38,10 +38,10 @@ const Navbar = () => {
                 </svg>
             </button>
             <div>
-                <img src={logo} alt='Logo' className='w-25' />
+                <img src={logo} alt='Logo' className='w-auto' />
             </div>
 
-            <div className={`links ${isMenuOpen ? 'block' : 'hidden'} md:flex flex-col md:flex-row gap-y-4 md:gap-1 gap-x-6 md:gap-x-14 mb-4 md:mb-0 text-base`}>
+            <div className={`links ${isMenuOpen ? 'block' : 'hidden'} md:flex flex-col md:flex-row gap-y-4 md:gap-1 gap-x-6 md:gap-x-12 mb-4 md:mb-0 text-sm font-medium`}>
                 <Link to="/mentor-dashboard" className={isActive('/mentor-dashboard')}>Dashboard</Link>
                 <Link to="/manage-slots" className={isActive('/manage-slots')}>Manage Slots</Link>
                 <Link to="/manage-requests" className={isActive('/manage-requests')}>Manage Requests</Link>

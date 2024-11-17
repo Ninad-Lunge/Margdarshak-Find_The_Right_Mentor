@@ -2,7 +2,7 @@ const express = require('express');
 const PDFDocument = require('pdfkit');
 const router = express.Router();
 
-router.post('/api/generate-resume', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const {
       personalInfo,

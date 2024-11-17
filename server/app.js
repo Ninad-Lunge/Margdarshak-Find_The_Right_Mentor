@@ -28,7 +28,7 @@ app.use('/api/mentee', menteeRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/availability', slots);
-app.use('/api', resumeRoutes);
+app.use('/api/generate-resume', resumeRoutes);
 // app.use('/api', scheduleRoutes);
 
 const authRoutes = require('./routes/auth');

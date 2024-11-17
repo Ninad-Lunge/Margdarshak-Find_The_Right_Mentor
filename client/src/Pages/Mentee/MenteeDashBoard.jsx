@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const MenteeDashboard = () => {
+const MenteeDashBoard = () => {
     const [upcomingSlots, setUpcomingSlots] = useState([]);
     const [error, setError] = useState(null);
 
@@ -101,4 +101,4 @@ const MenteeDashboard = () => {
     );
 }
 
-export default MenteeDashboard;
+export default MenteeDashBoard;

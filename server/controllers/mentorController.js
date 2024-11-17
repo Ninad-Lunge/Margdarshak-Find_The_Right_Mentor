@@ -97,10 +97,10 @@ exports.mentorLogin = async (req, res) => {
 
 
 
-// Follow a mentor
-exports.followMentor = async (req, res) => {
+// Follow or unfollow a mentor
+exports.toggleFollowMentor = async (req, res) => {
   const { mentorId } = req.params;
-  const menteeId = req.user.id; // Assume authenticated mentee's ID is in req.user (use middleware)
+  const menteeId = req.user.id; 
 
   try {
     const mentor = await Mentor.findById(mentorId);
@@ -109,17 +109,40 @@ exports.followMentor = async (req, res) => {
     }
 
     // Check if mentee already follows the mentor
-    if (mentor.followers.includes(menteeId)) {
-      return res.status(400).json({ success: false, message: 'You are already following this mentor.' });
+    const isFollowing = mentor.followers.includes(menteeId);
+
+    if (isFollowing) {
+      mentor.followers = mentor.followers.filter(id => id.toString() !== menteeId.toString());
+      mentor.followerCount = mentor.followers.length; 
+      await mentor.save();
+      return res.status(200).json({ success: true, message: 'Unfollowed mentor successfully', mentor });
     }
 
-    // Add mentee to mentor's followers
     mentor.followers.push(menteeId);
-    mentor.followerCount = mentor.followers.length; // Update follower count
+    mentor.followerCount = mentor.followers.length; 
     await mentor.save();
 
     res.status(200).json({ success: true, message: 'Followed mentor successfully', mentor });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error following mentor', error: error.message });
+    res.status(500).json({ success: false, message: 'Error toggling follow status', error: error.message });
   }
 };
+
+// Check if mentee follows a mentor
+exports.isFollowingMentor = async (req, res) => {
+  const { mentorId } = req.params;
+  const menteeId = req.user.id;
+
+  try {
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentor not found' });
+    }
+
+    const isFollowing = mentor.followers.includes(menteeId);
+    res.status(200).json({ success: true, isFollowing });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error checking follow status', error: error.message });
+  }
+};
+

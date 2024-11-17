@@ -6,7 +6,7 @@ import LoginPage from './Pages/LoginPage.jsx';
 import MenteeRegister from './Pages/MenteeRegister.jsx';
 import MentorRegister from './Pages/MentorRegister.jsx';
 import MentorDashborad from './Pages/Mentor/MentorDashboard.jsx';
-import MenteeDashboard from './Pages/Mentee/MenteeDashboard.jsx';
+import MenteeDashboard from './Pages/Mentee/MenteeDashBoard.jsx';
 import ResumeBuilder from './Pages/Mentee/ResumeBuilder.jsx';
 import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';

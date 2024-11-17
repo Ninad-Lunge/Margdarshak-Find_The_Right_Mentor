@@ -14,6 +14,8 @@ import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
+import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
+
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
           <Route path='/manage-requests' element={<MentorRequests />} />
           <Route path='/manage-slots' element={<ManageSlots />} />
           <Route path='/mentor-profile' element={<MentorProfile />} />
+          <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
           <Route exact path='/resume-builder' element={<ResumeBuilder />} />
         </Routes>
       </BrowserRouter>

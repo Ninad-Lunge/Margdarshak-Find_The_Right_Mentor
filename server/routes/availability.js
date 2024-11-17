@@ -79,7 +79,7 @@ router.get('/mentor', verifyToken, async (req, res) => {
       status: 'available',
       date: { $gte: new Date() } // Only show future dates
     })
-      .populate('mentorId', 'firstName lastName expertise')
+      .populate('mentorId', 'firstName lastName jobTitle')
       .populate('menteeId', 'firstName lastName')
       .sort({ date: 1, startTime: 1 }) // Sort by date and time
       .lean();

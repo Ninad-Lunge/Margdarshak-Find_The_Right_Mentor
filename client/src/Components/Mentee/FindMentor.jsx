@@ -131,7 +131,7 @@ const MenteeBooking = () => {
                     {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
                   </p>
                   <p className="text-gray-600">
-                    Expertise: {slot.mentorId?.expertise || 'Not specified'}
+                    Expertise: {slot.mentorId?.jobTitle || 'Not specified'}
                   </p>
                 </div>
                 

@@ -28,7 +28,7 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
-        <nav className="navbar font-sans flex flex-col md:flex-row justify-between px-5 m-5 items-center sticky top-0 left-0 right-0 bg-white z-40">
+        <nav className="navbar font-sans flex flex-col md:flex-row shadow-lg justify-between px-5 m-5 items-center sticky top-0 left-0 right-0 bg-white z-40">
             <button 
                 className="md:hidden block focus:outline-none" 
                 onClick={handleToggleMenu}
@@ -45,7 +45,7 @@ const Navbar = () => {
                 <Link to="/mentee-dashboard" className={isActive('/mentee-dashboard')}>Dashboard</Link>
                 <Link to="/find-mentors" className={isActive('/find-mentors')}>Find Mentors</Link>
                 <Link to="/manage-meetings" className={isActive('/manage-meetings')}>Meetings</Link>
-                <Link to="/mentee-profile" className={isActive('/mentee-profile')}>Profile</Link>
+                <Link to="/mentorprofilebymentee" className={isActive('/mentee-profile')}>Profile</Link>
                 <button onClick={handleLogout} className={isActive('')}>Log Out</button>
             </div>
         </nav>

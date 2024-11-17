@@ -1,13 +1,12 @@
-import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 import Home from './Pages/Home.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import MenteeRegister from './Pages/MenteeRegister.jsx';
 import MentorRegister from './Pages/MentorRegister.jsx';
-import ScheduleMeeting from './Pages/Mentee/ScheduleMeetingWithMentor.jsx';
 import MentorDashborad from './Pages/Mentor/MentorDashboard.jsx';
-import MenteeDashboard from './Pages/Mentee/MenteeDashBoard.jsx';
+import MenteeDashboard from './Pages/Mentee/MenteeDashboard.jsx';
 import ResumeBuilder from './Pages/Mentee/ResumeBuilder.jsx';
 import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';
@@ -15,28 +14,106 @@ import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  return isLoggedIn ? children : <Navigate to="/login" />;
+};
+
 function App() {
+  const [initialPath, setInitialPath] = useState('/');
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const role = localStorage.getItem('role');
+
+    if (isLoggedIn) {
+      if (role === 'Mentor') {
+        setInitialPath('/mentor-dashboard');
+      } else if (role === 'Mentee') {
+        setInitialPath('/mentee-dashboard');
+      }
+    } else {
+      setInitialPath('/home');
+    }
+  }, []);
+
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route exact path='/' element={<Home />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/mentor-register' element={<MentorRegister />} />
-          <Route path='/mentee-register' element={<MenteeRegister />} />
-          <Route path='/schedule-meeting' element={<ScheduleMeeting />} />
-          <Route path='/mentor-dashboard' element={<MentorDashborad />} />
-          <Route path='/mentee-dashboard' element={<MenteeDashboard />} />
-          <Route path='/add-slots' element={<MentorAvailability />} />
-          <Route path='/find-mentors' element={<MenteeBooking />} />
-          <Route path='/manage-requests' element={<MentorRequests />} />
-          <Route path='/manage-slots' element={<ManageSlots />} />
-          <Route path='/mentor-profile' element={<MentorProfile />} />
-          <Route exact path='/resume-builder' element={<ResumeBuilder />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to={initialPath} />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/mentor-register" element={<MentorRegister />} />
+        <Route path="/mentee-register" element={<MenteeRegister />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/mentor-dashboard"
+          element={
+            <ProtectedRoute>
+              <MentorDashborad />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mentee-dashboard"
+          element={
+            <ProtectedRoute>
+              <MenteeDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-slots"
+          element={
+            <ProtectedRoute>
+              <MentorAvailability />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/find-mentors"
+          element={
+            <ProtectedRoute>
+              <MenteeBooking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manage-requests"
+          element={
+            <ProtectedRoute>
+              <MentorRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manage-slots"
+          element={
+            <ProtectedRoute>
+              <ManageSlots />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mentor-profile"
+          element={
+            <ProtectedRoute>
+              <MentorProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/resume-builder"
+          element={
+            <ProtectedRoute>
+              <ResumeBuilder />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

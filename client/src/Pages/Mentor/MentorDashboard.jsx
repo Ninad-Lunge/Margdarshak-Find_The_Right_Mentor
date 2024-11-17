@@ -62,7 +62,7 @@ const MentorDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if(Array.isArray(response.data)) {
+      if (Array.isArray(response.data)) {
         setConfirmedSlots(response.data);
       } else {
         console.error('Unexpected response format:', response.data);
@@ -83,29 +83,56 @@ const MentorDashboard = () => {
   return (
     <div className="mentor min-h-screen bg-gray-50">
       <Navbar />
-  
-      <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
-        {/* Sidebar */}
-        <div className="col-span-1 px-2 py-8 mx-6 bg-white shadow rounded-lg">
-          <img
-            src={mentorData.profileImage || '/default-profile.png'}
-            alt="Mentor Profile"
-            className="mentor-img border border-black rounded-full h-32 w-32 mx-auto"
-          />
-          <h1 className="mentor-name mt-10 mx-auto text-center">
-            {mentorData.firstName} {mentorData.lastName}
-          </h1>
-          <p className="text-center text-gray-600">Industry: Technology</p>
-          <p className="text-center text-gray-600">Location: New York</p>
-          <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block">
-            Edit Profile
-          </button>
-        </div>
 
-        {/* Stats Section */}
-        <div className="stats col-span-2 bg-white shadow rounded-lg">
-          <h2 className="text-center mt-2 font-semibold">Your Stats</h2>
-          {/* Add relevant stats here */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
+
+        <div className="col-span-3">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* Sidebar */}
+            <div className="py-8 bg-white shadow rounded-lg">
+              <img
+                src={mentorData.profileImage || '/default-profile.png'}
+                alt="Mentor Profile"
+                className="mentor-img border border-black rounded-full h-36 w-36 mx-auto mt-2"
+              />
+              <h1 className="mentor-name mt-8 mx-auto text-center">
+                {mentorData.firstName} {mentorData.lastName}
+              </h1>
+              <p className="text-center text-gray-600">Industry: {mentorData.industrywork}</p>
+              <p className="text-center text-gray-600">Location: New York</p>
+              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block">
+                Edit Profile
+              </button>
+            </div>
+
+            {/* Stats Section */}
+            <div className="stats col-span-2 bg-white shadow rounded-lg">
+              <h2 className="text-center mt-2 font-semibold">Your Stats</h2>
+              {/* Add relevant stats here */}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Community Section */}
+            <div className="community bg-white shadow rounded-lg h-60 flex flex-col">
+              <h2 className="text-center mt-2 font-bold">Community</h2>
+              <button
+                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
+              >
+                Create a new Community
+              </button>
+            </div>
+
+            {/* Workshops Section */}
+            <div className="workshops bg-white shadow rounded-lg h-60 flex flex-col">
+              <h2 className="text-center mt-2 font-bold">Workshops</h2>
+              <button
+                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
+              >
+                Conduct Workshop
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Meetings Section */}
@@ -118,16 +145,19 @@ const MentorDashboard = () => {
             Add Availability
           </button>
           <h3 className="mt-2 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+
+          {error && <p className="text-red-500">{error}</p>}
+
           <div className="space-y-2">
             {confirmedSlots.map((slot, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
               >
                 <div className="mb-2">
                   <h3 className="text-md font-medium">
-                    Mentee: {slot.mentorId?.firstName || 'Not specified'}
-                    {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
+                    Mentee: {slot.menteeId?.firstName || 'Not specified'}
+                    {slot.menteeId?.lastName ? ` ${slot.menteeId.lastName}` : ''}
                   </h3>
                 </div>
 
@@ -143,13 +173,13 @@ const MentorDashboard = () => {
                     </div>
                   </div>
                   <div className="flex">
-                    <a 
-                        href={slot.meetLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="text-blue-500 text-sm hover:text-blue-600 p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
-                      >
-                        Join Meet
+                    <a
+                      href={slot.meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
+                    >
+                      Join Meet
                     </a>
                   </div>
                 </div>
@@ -158,26 +188,7 @@ const MentorDashboard = () => {
             ))}
           </div>
         </div>
-  
-        {/* Community Section */}
-        <div className="community col-span-2 bg-white shadow rounded-lg h-60 flex flex-col">
-          <h2 className="text-center mt-2 font-bold">Community</h2>
-          <button
-            className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
-          >
-            Create a new Community
-          </button>
-        </div>
-  
-        {/* Workshops Section */}
-        <div className="workshops col-span-2 bg-white shadow rounded-lg h-60 flex flex-col">
-          <h2 className="text-center mt-2 font-bold">Workshops</h2>
-          <button
-            className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
-          >
-            Conduct Workshop
-          </button>
-        </div>
+
       </div>
     </div>
   );

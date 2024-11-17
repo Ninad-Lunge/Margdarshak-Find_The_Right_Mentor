@@ -195,19 +195,19 @@ const MentorRequests = () => {
             bookedSlots.map((slot) => (
               <div 
                 key={slot._id} 
-                className="bg-white p-4 rounded shadow-md space-y-4 transition-all duration-300 hover:shadow-lg"
+                className="bg-white p-4 rounded space-y-4 transition-all duration-300 hover:shadow-md border border-gray-300"
               >
-                <p><strong>Date:</strong> {new Date(slot.date).toLocaleDateString()}</p>
-                <p><strong>Time:</strong> {formatTime(slot.startTime)} - {formatTime(slot.endTime)}</p>
+                <p><strong>Date: </strong> {new Date(slot.date).toLocaleDateString()}</p>
+                <p><strong>Time: </strong> {formatTime(slot.startTime)} - {formatTime(slot.endTime)}</p>
 
                 <div>
                   <p>
-                    <strong>Mentee Name:</strong> 
-                    {slot.menteeId?.firstName || 'Not Specified'}
+                    <strong>Mentee Name: </strong> 
+                    <span className='text-gray-600'>{slot.menteeId?.firstName || 'Not Specified'}</span>
                   </p>
                   <p>
-                    <strong>Mentee Expertise:</strong> 
-                    {slot.menteeId?.expertise || 'Not specified'}
+                    <strong>Mentee Expertise: </strong> 
+                    <span className='text-gray-600'>{slot.menteeId?.expertise || 'Not specified'}</span>
                   </p>
                 </div>
 

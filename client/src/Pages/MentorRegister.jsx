@@ -89,18 +89,19 @@ const MentorRegister = () => {
     };
 
     return (
-        <div className="login-container flex flex-col md:flex-row justify-center items-center min-h-screen p-4 bg-gray-100">
-            <div className="logo-container w-full md:w-1/3 flex justify-center items-center h-full">
-                <img src={logo} alt="icon" className="logo w-3/4 md:w-1/2" />
+        <div className="login-container flex flex-col md:flex-row justify-center items-center min-h-screen bg-green-50">
+            <div className="hidden logo-container w-full md:w-5/12 md:flex flex-col justify-center items-center h-full m-2">
+                <img src={logo} alt="MentorHands Logo" className="logo w-1/4 md:w-1/3" />
+                <p className='text-[#3B50D5] text-xl md:text-5xl text-semibold mt-10'>Margadarshak</p>
             </div>
 
-            <div className="form-container w-full md:w-2/3 bg-white flex flex-col justify-center p-8 md:p-40 max-h-screen">
-                <h1 className="text-xl font-semibold mb-3">Apply as a Mentor</h1>
+            <div className="form-container w-full md:w-7/12 bg-white flex flex-col justify-center h-screen md:p-20">
+                <h1 className="text-xl font-semibold px-6">Apply as a Mentor</h1>
 
-                <div className="form-container w-full md:w-2/3 bg-white p-6">
+                <div className="form-container w-full bg-white p-6">
                     <h1 className="text-xl font-semibold mb-4">Mentor Application - Step {currentStep}</h1>
 
-                    <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-3 w-[600px]'>
+                    <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-3'>
                         {/* Step 1: About Section */}
                         {currentStep === 1 && (
                             <>
@@ -150,7 +151,7 @@ const MentorRegister = () => {
                                     <label>Skills</label>
                                     <input type="text" name="skills" value={formData.skills} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                                 </div>
-                                <div className="form-group">
+                                <div className="form-group col-span-2">
                                     <label>Bio</label>
                                     <textarea name="bio" value={formData.bio} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                                 </div>
@@ -162,7 +163,7 @@ const MentorRegister = () => {
                                     <label>Twitter URL</label>
                                     <input type="text" name="twitter" value={formData.twitter} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
                                 </div>
-                                <div className="form-group">
+                                <div className="form-group col-span-2">
                                     <label>Website URL</label>
                                     <input type="text" name="website" value={formData.website} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
                                 </div>
@@ -192,7 +193,7 @@ const MentorRegister = () => {
                         )}
 
                         {/* Navigation Buttons */}
-                        <div className="form-navigation mt-4 flex justify-between gap-32">
+                        <div className="form-navigation mt-4 flex justify-between gap-32 col-span-2">
                             {currentStep > 1 && <button type="button" className="px-4 py-2 bg-gray-300 border rounded-md w-[150px]" onClick={handlePrev}>Previous</button>}
                             {currentStep < 3 && <button type="button" className="px-4 py-2 bg-blue-500 text-white border rounded-md w-[150px]" onClick={handleNext}>Next</button>}
                             {currentStep === 3 && <button type="submit" className="px-4 py-2 bg-blue-500 text-white border rounded-md w-[150px]">Submit</button>}

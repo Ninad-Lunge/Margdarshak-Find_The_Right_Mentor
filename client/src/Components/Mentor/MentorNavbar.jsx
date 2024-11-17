@@ -20,7 +20,8 @@ const Navbar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('token'); 
+        localStorage.removeItem('token');
+        localStorage.removeItem('role'); 
         setIsLoggedIn(false);
         navigate('/');
       };

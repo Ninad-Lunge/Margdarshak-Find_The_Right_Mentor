@@ -12,41 +12,89 @@ const Navbar = () => {
         // Check if the user is logged in by checking local storage or any authentication token
         const loggedInStatus = localStorage.getItem('isLoggedIn');
         setIsLoggedIn(loggedInStatus === 'true');
-      }, []);
+    }, []);
 
-    function handleToggleMenu() {
+    const handleToggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
-    }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('token'); 
+        localStorage.removeItem('token');
+        localStorage.removeItem('role'); 
         setIsLoggedIn(false);
         navigate('/');
     };
 
-    const isActive = (path) => location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
+    const isActive = (path) =>
+        location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
-        <nav className="navbar flex flex-col md:flex-row justify-between px-10 h-14 items-center sticky top-0 left-0 right-0 bg-white mx-2 mt-2 rounded-md shadow-sm">
-            <button 
-                className="md:hidden block focus:outline-none" 
-                onClick={handleToggleMenu}
-            >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <div>
-                <img src={logo} alt='Logo' className='w-25' />
+        <nav className="navbar flex justify-between items-center px-4 md:px-10 h-16 bg-white">
+            {/* Logo */}
+            <div className="flex items-center">
+                <img src={logo} alt="Logo" className="w-28 md:w-auto h-auto cursor-pointer" />
             </div>
 
-            <div className={`links ${isMenuOpen ? 'block' : 'hidden'} md:flex flex-col md:flex-row gap-y-4 md:gap-1 gap-x-6 md:gap-x-12 mb-4 md:mb-0 text-sm font-medium`}>
-                <Link to="/mentee-dashboard" className={isActive('/mentee-dashboard')}>Dashboard</Link>
-                <Link to="/find-mentors" className={isActive('/find-mentors')}>Find Mentors</Link>
-                <Link to="/manage-meetings" className={isActive('/manage-meetings')}>Meetings</Link>
-                <Link to="/mentee-profile" className={isActive('/mentee-profile')}>Profile</Link>
-                <button onClick={handleLogout} className={isActive('')}>Log Out</button>
+            {/* Mobile Menu Button */}
+            <button
+                className="md:hidden block focus:outline-none"
+                onClick={handleToggleMenu}
+            >
+                <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    ></path>
+                </svg>
+            </button>
+
+            {/* Menu Items */}
+            <div
+                className={`absolute md:relative top-16 md:top-0 left-0 md:left-auto w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none ${
+                    isMenuOpen ? 'block' : 'hidden'
+                } md:flex flex-col md:flex-row items-center md:items-center gap-y-4 md:gap-y-0 md:gap-x-12 py-4 md:py-0`}
+            >
+                <Link
+                    to="/mentee-dashboard"
+                    className={`px-4 py-2 md:p-0 ${isActive('/mentee-dashboard')}`}
+                >
+                    Dashboard
+                </Link>
+                <Link
+                    to="/find-mentors"
+                    className={`px-4 py-2 md:p-0 ${isActive('/find-mentors')}`}
+                >
+                    Find Mentors
+                </Link>
+                <Link
+                    to="/manage-meetings"
+                    className={`px-4 py-2 md:p-0 ${isActive('/manage-meetings')}`}
+                >
+                    Meetings
+                </Link>
+                <Link
+                    to="/mentee-profile"
+                    className={`px-4 py-2 md:p-0 ${isActive('/mentee-profile')}`}
+                >
+                    Profile
+                </Link>
+                {isLoggedIn && (
+                    <button
+                        onClick={handleLogout}
+                        className={`px-4 py-2 md:p-0 ${isActive('')}`}
+                    >
+                        Log Out
+                    </button>
+                )}
             </div>
         </nav>
     );

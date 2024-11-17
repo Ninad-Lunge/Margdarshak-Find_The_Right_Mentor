@@ -28,7 +28,10 @@ const MentorSchema = new mongoose.Schema({
   noofprojects: { type: String, required: true },        //new added
   yearofexperience: { type: String, required: true },        //new added
   technologies: { type: String, required: true },        //new added
-  positionofmentors: { type: String, required: true }        //new added
+  positionofmentors: { type: String, required: true } ,       //new added
+
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentee' }], // Array of mentee IDs
+  followerCount: { type: Number, default: 0 } // Count of followers
 
 });
 

@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import Navbar from '../../Components/Mentee/MenteeNavbar.jsx';
-import logo from '../../Assets/MentorHands.png';
+// import logo from '../../Assets/MentorHands.png';
 
 import { FaEnvelope, FaYoutube, FaGithub, FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
 
 
 
-const MentorDashboard = () => {
+// const MentorDashboard = () => {
+//     const navigate = useNavigate();
+
+
+const MentorProfile = ({ mentorId, token }) => {
+    const [isFollowing, setIsFollowing] = useState(false);
     const navigate = useNavigate();
+  
+    const handleFollow = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Token: ' + token);
+
+        const response = await fetch(`/api/mentors/${mentorId}/follow`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Pass mentee's token for authentication
+          },
+        });
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          setIsFollowing(true);
+          alert('You are now following this mentor!');
+        } else {
+          alert(`Error: ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Error following mentor:', error);
+        alert('An error occurred while following the mentor.');
+      }
+    };
+  
 
     // Mock mentor data
     const mentorData = {
@@ -59,9 +93,18 @@ const MentorDashboard = () => {
                             <span className="text-gray-300">★</span>
                         </div>
                     </div>
-                    <button className="mt-4 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mx-auto block">
+                    {/* <button className="mt-4 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mx-auto block">
                         Follow
+                    </button> */}
+                    <button
+                        className={`mt-4 px-3 py-1 rounded ${isFollowing ? 'bg-gray-400' : 'bg-blue-500 text-white hover:bg-blue-600 mx-auto block'
+                            }`}
+                        onClick={handleFollow}
+                        disabled={isFollowing}
+                    >
+                        {isFollowing ? 'Following' : 'Follow'}
                     </button>
+
 
                 </div>
 
@@ -227,4 +270,4 @@ const MentorDashboard = () => {
     );
 };
 
-export default MentorDashboard;
+export default MentorProfile;

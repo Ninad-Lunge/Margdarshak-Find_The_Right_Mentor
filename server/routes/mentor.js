@@ -8,7 +8,8 @@ const {
   updateMentor,
   deleteMentor,
   searchMentors,
-  mentorLogin
+  mentorLogin,
+  followMentor
 } = require('../controllers/mentorController');
 
 // CRUD routes
@@ -21,5 +22,7 @@ router.delete('/:id', verifyToken, deleteMentor); // Delete a mentor
 // Other routes
 router.get('/search', searchMentors); // Search mentors by filters
 router.post('/login', mentorLogin); // Mentor login
+router.post('/:mentorId/follow', verifyToken, followMentor); // Mentee follows a mentor
+
 
 module.exports = router;

@@ -48,6 +48,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentee-register" element={<MenteeRegister />} />
+        <Route path="/resume-builder" element={<ResumeBuilder />} />
 
         {/* Protected Routes */}
         <Route
@@ -106,14 +107,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/resume-builder"
           element={
             <ProtectedRoute>
               <ResumeBuilder />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
       </Routes>
     </BrowserRouter>

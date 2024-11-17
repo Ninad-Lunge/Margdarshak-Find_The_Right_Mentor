@@ -241,7 +241,7 @@ const MentorRegister = () => {
                     )}
 
                     {/* Navigation Buttons */}
-                    <div className="form-navigation mt-4 flex justify-between gap-32">
+                    <div className="form-navigation mt-4 flex justify-between gap-32 col-span-2">
                         {currentStep > 1 && <button type="button" className="px-4 py-2 bg-gray-300 border rounded-md w-[150px]" onClick={handlePrev}>Previous</button>}
                         {currentStep < 4 && <button type="button" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]" onClick={handleNext}>Next</button>}
                         {currentStep === 4 && <button type="submit" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]">Submit</button>}

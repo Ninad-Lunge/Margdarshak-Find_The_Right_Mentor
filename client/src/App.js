@@ -114,8 +114,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
       </Routes>
-      <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
     </BrowserRouter>
   );
 }

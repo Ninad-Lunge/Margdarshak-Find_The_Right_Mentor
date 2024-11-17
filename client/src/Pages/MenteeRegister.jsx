@@ -6,8 +6,8 @@ const MenteeRegister = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        'first-name': '',
-        'last-name': '',
+        firstName : '',
+        lastName : '',
         email: '',
         password: '',
         role: 'Mentee',
@@ -17,7 +17,7 @@ const MenteeRegister = () => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: value,
         });
     };
 
@@ -26,7 +26,11 @@ const MenteeRegister = () => {
     };
 
     const handleLogin = () => {
-        navigate('/Login');
+        navigate('/login');
+    };
+
+    const handleGoogleSignUp = () => {
+        console.log('Google Sign-Up functionality not implemented yet.');
     };
 
     const handleSubmit = async (e) => {
@@ -34,7 +38,7 @@ const MenteeRegister = () => {
         console.log('Form Data Submitted: ', formData);
 
         try {
-            const response = await fetch('/api/register-mentee', {
+            const response = await fetch('/api/mentee/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,10 +47,13 @@ const MenteeRegister = () => {
             });
 
             if (response.ok) {
-                console.log('Mentee data submitted successfully');
+                const menteeData = await response.json();
+                localStorage.setItem('menteeData', JSON.stringify(menteeData));
+                localStorage.setItem('menteeId', menteeData._id);
+                localStorage.setItem('token', menteeData.token);
                 navigate('/mentee-dashboard');
             } else {
-                console.error('Error submitting mentee data:', response.statusText);
+                console.error('Failed to register:', response.statusText);
             }
         } catch (err) {
             console.error('Error:', err);
@@ -54,79 +61,103 @@ const MenteeRegister = () => {
     };
 
     return (
-        <div className="login-container flex flex-col md:flex-row justify-center items-center min-h-screen p-4 bg-gray-100">
+        <div className="login-container flex flex-col md:flex-row justify-center items-center max-h-screen bg-green-50">
             {/* Left side - Logo */}
-            <div className="logo-container w-full md:w-1/3 flex justify-center items-center h-full">
-                <img src={logo} alt="icon" className="logo w-3/4 md:w-1/2" />
+            <div className="hidden logo-container w-full md:w-5/12 md:flex flex-col justify-center items-center h-full m-2">
+                <img src={logo} alt="MentorHands Logo" className="logo w-1/4 md:w-1/3" />
+                <p className='text-[#3B50D5] text-xl md:text-5xl text-semibold mt-10'>Margadarshak</p>
             </div>
 
             {/* Right side - Form */}
-            <div className="form-container w-full md:w-2/3 bg-white flex flex-col justify-center p-8 md:p-40 max-h-screen">
+            <div className="form-container w-full md:w-7/12 bg-white flex flex-col justify-center p-8 md:p-36 max-h-screen">
                 <h1 className="text-xl font-semibold mb-6">Sign Up as a Mentee</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4 flex flex-col items-center">
-                    <div className="form-group">
+                    <div className="form-group w-full">
                         <label className="block mb-1 text-sm">First Name</label>
-                        <input 
+                        <input
                             type="text"
-                            name="first-name"
-                            value={formData['first-name']}
+                            name="firstName"
+                            value={formData.firstName}
                             onChange={handleChange}
-                            className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
                         />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group w-full">
                         <label className="block mb-1 text-sm">Last Name</label>
-                        <input 
+                        <input
                             type="text"
-                            name="last-name"
-                            value={formData['last-name']}
+                            name="lastName"
+                            value={formData.lastName}
                             onChange={handleChange}
-                            className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
                         />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group w-full">
                         <label className="block mb-1 text-sm">Enter your Email</label>
-                        <input 
+                        <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
                         />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group w-full">
                         <label className="block mb-1 text-sm">Enter your Password</label>
-                        <input 
+                        <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-[560px] h-[50px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             required
                         />
                     </div>
 
-                    <button className="w-[560px] h-[50px] bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors" type="submit">
+                    <button
+                        className="w-full h-12 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                        type="submit"
+                    >
                         Sign Up
                     </button>
 
                     <p>Or</p>
 
-                    <button className="w-[560px] h-[50px] bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black" type="submit">
+                    <button
+                        className="w-full h-12 bg-white text-black rounded-md hover:bg-black hover:text-white transition-colors border border-black"
+                        type="button"
+                        onClick={handleGoogleSignUp}
+                    >
                         Sign Up with Google
                     </button>
                 </form>
 
-                <p className='mt-2'><span>Already have an account?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleLogin}>Login</span></p>
+                <p className="mt-2">
+                    <span>Already have an account?</span>
+                    <span
+                        className="ms-2 text-green-500 cursor-pointer"
+                        onClick={handleLogin}
+                    >
+                        Login
+                    </span>
+                </p>
 
-                <p className='mt-2'><span>Looking to join us as a mentor?</span><span className='ms-2 text-green-500 cursor-pointer' onClick={handleApply}>Apply Now</span></p>
+                <p className="mt-2">
+                    <span>Looking to join us as a mentor?</span>
+                    <span
+                        className="ms-2 text-green-500 cursor-pointer"
+                        onClick={handleApply}
+                    >
+                        Apply Now
+                    </span>
+                </p>
             </div>
         </div>
     );
-}
+};
 
 export default MenteeRegister;

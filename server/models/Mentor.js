@@ -8,16 +8,31 @@ const MentorSchema = new mongoose.Schema({
   jobTitle: { type: String, required: true },
   company: { type: String, required: true },
   location: { type: String, required: true },
-  industry: { type: String, required: true },
+  industrywork: { type: String, required: true },   //change
   skills: { type: String, required: true },
-  bio: { type: String },
-  linkedin: { type: String },
-  twitter: { type: String },
-  website: { type: String },
-  introVideo: { type: String },
-  featuredArticles: { type: String },
-  whyMentor: { type: String },
-  greatestAchievement: { type: String }
+  bio: { type: String, required: true },
+  linkedin: { type: String, required: true },
+  twitter: { type: String, required: true },
+  website: { type: String, required: true },
+  introVideo: { type: String, required: true },
+  featuredArticles: { type: String, required: true },
+  whyMentor: { type: String, required: true },
+  greatestAchievement: { type: String, required: true },
+
+  // for recommendation engine
+  industry: { type: String, required: true },         //new added
+  companytype: { type: String, required: true },      //new added
+  noofmentoredstudent: { type: String, required: true },        //new added
+  domain: { type: String, required: true },            //new added
+  subdomain: { type: String, required: true },        //new added
+  noofprojects: { type: String, required: true },        //new added
+  yearofexperience: { type: String, required: true },        //new added
+  technologies: { type: String, required: true },        //new added
+  positionofmentors: { type: String, required: true } ,       //new added
+
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentee' }], // Array of mentee IDs
+  followerCount: { type: Number, default: 0 } // Count of followers
+
 });
 
 module.exports = mongoose.model('Mentor', MentorSchema);

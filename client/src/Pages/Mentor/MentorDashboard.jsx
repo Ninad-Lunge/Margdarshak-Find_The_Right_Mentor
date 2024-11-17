@@ -1,172 +1,197 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import TimePicker from 'react-time-picker';
-import Navbar from '../../Components/Navbar/Navbar';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../../Components/Mentor/MentorNavbar';
 import 'react-time-picker/dist/TimePicker.css';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MentorDashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [slots, setSlots] = useState([]); // Store all added slots here
-  const [selectedSlot, setSelectedSlot] = useState({ date: '', startTime: '', endTime: '' });
-  const [error, setError] = useState('');
+  const [confirmedSlots, setConfirmedSlots] = useState([]);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  const handleSlotChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedSlot({ ...selectedSlot, [name]: value });
-  };
-
-  const handleAddSlot = () => {
-    setSlots([...slots, selectedSlot]);
-    setSelectedSlot({ date: '', startTime: '', endTime: '' }); // Reset slot input
-  };
-
-  const handleRemoveSlot = (index) => {
-    setSlots(slots.filter((_, i) => i !== index));
-  };
-
-  const handleSaveSlots = async () => {
+  const [mentorData, setMentorData] = useState(() => {
     try {
-      const response = await axios.post('/api/slots/add', { mentorId: 'mentorIdHere', slots });
-      if (response.data.success) {
-        alert('Slots saved successfully');
-        setSlots([]); // Clear slots after saving
-        closeModal();
-      } else {
-        setError(response.data.message || 'Failed to save slots');
+      const savedData = localStorage.getItem('mentorData');
+      console.log("Mentor data from localStorage:", savedData);
+      return savedData ? JSON.parse(savedData) : null;
+    } catch (error) {
+      console.error("Error parsing mentor data from localStorage:", error);
+      return null;
+    }
+  });
+
+  const mentorId = localStorage.getItem('mentorId');
+
+  // Fetch mentor data from API if not in localStorage
+  useEffect(() => {
+    if (!mentorData && mentorId) {
+      fetch(`/api/mentor/${mentorId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            setMentorData(data.mentor);
+            localStorage.setItem('mentorData', JSON.stringify(data.mentor));
+          } else {
+            console.error("Failed to fetch mentor data");
+          }
+        })
+        .catch(error => console.error("Error fetching mentor data from API:", error));
+    }
+  }, [mentorData, mentorId]);
+
+  const handleNavigation = () => {
+    navigate('/add-slots');
+  };
+
+  useEffect(() => {
+    fetchConfirmedSlots();
+  }, []);
+
+  const fetchConfirmedSlots = async () => {
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No authentication token found. Please log in.');
+        return;
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+
+      const response = await axios.get('/api/availability/confirmed', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (Array.isArray(response.data)) {
+        setConfirmedSlots(response.data);
+      } else {
+        console.error('Unexpected response format:', response.data);
+        setError('Invalid data format received from server');
+      }
+    } catch (error) {
+      console.error('Error details:', error.response || error);
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to load available slots';
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
+  if (!mentorData) {
+    return <div>Loading mentor data...</div>;
+  }
+
   return (
-    <div className="mentor">
+    <div className="mentor min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="grid grid-cols-4 mt-20 mx-12 gap-6">
-        {/* Sidebar */}
-        <div className="col-span-1 border border-black rounded-md px-2 py-16 mx-6">
-          <img src="" alt="" className="mentor-img border border-black rounded-full h-32 w-32 mx-auto" />
-          <h1 className="mentor-name mt-10 mx-auto text-center">Replace with name</h1>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
 
-        {/* Stats Section */}
-        <div className="stats col-span-2 border border-black rounded-md">Stats</div>
-
-        {/* Meetings Section */}
-        <div className="meetings col-span-1 border border-black rounded-md flex flex-col">
-          <button 
-            onClick={openModal} 
-            className="add-slots border border-black px-4 py-2 self-center mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1"
-          >
-            Add Slots
-          </button>
-          <div className="meets self-center mt-4">Upcoming Meetings</div>
-        </div>
-
-        {/* Community Section */}
-        <div className="community col-span-2 border border-black rounded-md h-60 flex flex-col">
-          Community
-          <button className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto">
-            Create a new Community
-          </button>
-        </div>
-
-        {/* Workshops Section */}
-        <div className="workshops col-span-2 border border-black rounded-md h-60 flex flex-col">
-          Workshops
-          <button className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto">
-            Conduct Workshop
-          </button>
-        </div>
-      </div>
-
-      {/* Modal for Adding Slots */}
-      {isModalOpen && (
-        <div className="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="modal-content bg-white rounded-lg p-6 w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Add Free Slot</h2>
-            
-            <label className="block mb-2">
-              Select Date:
-              <input 
-                type="date" 
-                name="date" 
-                value={selectedSlot.date} 
-                onChange={handleSlotChange} 
-                className="border rounded-md w-full mt-1 p-2"
+        <div className="col-span-3">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* Sidebar */}
+            <div className="py-8 bg-white shadow rounded-lg">
+              <img
+                src={mentorData.profileImage || '/default-profile.png'}
+                alt="Mentor Profile"
+                className="mentor-img border border-black rounded-full h-36 w-36 mx-auto mt-2"
               />
-            </label>
-            
-            <label className="block mb-2">
-              Start Time:
-              <TimePicker
-                onChange={(time) => setSelectedSlot({ ...selectedSlot, startTime: time })}
-                value={selectedSlot.startTime}
-                disableClock
-                className="border rounded-md w-full mt-1 p-2"
-                format="h:mm a"
-              />
-            </label>
-
-            <label className="block mb-4">
-              End Time:
-              <TimePicker
-                onChange={(time) => setSelectedSlot({ ...selectedSlot, endTime: time })}
-                value={selectedSlot.endTime}
-                disableClock
-                className="border rounded-md w-full mt-1 p-2"
-                format="h:mm a"
-              />
-            </label>
-
-            <button 
-              onClick={handleAddSlot} 
-              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 mb-4"
-            >
-              Add Slot
-            </button>
-
-            {/* Display Added Slots */}
-            <h3 className="text-lg font-semibold mb-2">Review Slots:</h3>
-            <ul className="mb-4">
-              {slots.map((slot, index) => (
-                <li key={index} className="flex justify-between items-center mb-2">
-                  <span>{`${slot.date} | ${slot.startTime} - ${slot.endTime}`}</span>
-                  <button 
-                    onClick={() => handleRemoveSlot(index)} 
-                    className="text-red-500 hover:underline"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            {error && <p className="text-red-500 mb-2">{error}</p>}
-
-            <div className="flex justify-end space-x-4">
-              <button 
-                onClick={closeModal} 
-                className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400"
-              >
-                Cancel
+              <h1 className="mentor-name mt-8 mx-auto text-center">
+                {mentorData.firstName} {mentorData.lastName}
+              </h1>
+              <p className="text-center text-gray-600">Industry: {mentorData.industrywork}</p>
+              <p className="text-center text-gray-600">Location: New York</p>
+              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block">
+                Edit Profile
               </button>
-              <button 
-                onClick={handleSaveSlots} 
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            </div>
+
+            {/* Stats Section */}
+            <div className="stats col-span-2 bg-white shadow rounded-lg">
+              <h2 className="text-center mt-2 font-semibold">Your Stats</h2>
+              {/* Add relevant stats here */}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Community Section */}
+            <div className="community bg-white shadow rounded-lg h-60 flex flex-col">
+              <h2 className="text-center mt-2 font-bold">Community</h2>
+              <button
+                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
               >
-                Save All Slots
+                Create a new Community
+              </button>
+            </div>
+
+            {/* Workshops Section */}
+            <div className="workshops bg-white shadow rounded-lg h-60 flex flex-col">
+              <h2 className="text-center mt-2 font-bold">Workshops</h2>
+              <button
+                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
+              >
+                Conduct Workshop
               </button>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Meetings Section */}
+        <div className="col-span-1 bg-white shadow rounded-lg p-4">
+          <h2 className="text-center font-semiold">Meetings</h2>
+          <button
+            onClick={handleNavigation}
+            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+          >
+            Add Availability
+          </button>
+          <h3 className="mt-2 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+
+          {error && <p className="text-red-500">{error}</p>}
+
+          <div className="space-y-2">
+            {confirmedSlots.map((slot, index) => (
+              <div
+                key={index}
+                className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
+              >
+                <div className="mb-2">
+                  <h3 className="text-md font-medium">
+                    Mentee: {slot.menteeId?.firstName || 'Not specified'}
+                    {slot.menteeId?.lastName ? ` ${slot.menteeId.lastName}` : ''}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-3">
+                  <div className="space-y-1 text-gray-600 col-span-2">
+                    <div className="flex items-center space-x-1 text-sm">
+                      <span className="font-medium">Date:</span>
+                      <span>{new Date(slot.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-sm">
+                      <span className="font-medium">Time:</span>
+                      <span>{slot.startTime} - {slot.endTime}</span>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <a
+                      href={slot.meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
+                    >
+                      Join Meet
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
-}
+};
 
 export default MentorDashboard;

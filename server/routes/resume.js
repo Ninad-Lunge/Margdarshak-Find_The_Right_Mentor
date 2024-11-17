@@ -2,7 +2,7 @@ const express = require('express');
 const PDFDocument = require('pdfkit');
 const router = express.Router();
 
-router.post('/generate-resume', async (req, res) => {
+router.post('/api/generate-resume', async (req, res) => {
   try {
     const {
       personalInfo,
@@ -17,7 +17,8 @@ router.post('/generate-resume', async (req, res) => {
     // Create a new PDF document
     const doc = new PDFDocument({
       size: 'A4',
-      margin: 50
+      margin: 50,
+      bufferPages: true // Enable buffering of pages
     });
 
     // Set response headers
@@ -50,18 +51,31 @@ router.post('/generate-resume', async (req, res) => {
        .font('Helvetica')
        .moveDown()
        .text(personalInfo.email, { align: 'center' })
-       .text(personalInfo.phone, { align: 'center' })
-       .text(personalInfo.address, { align: 'center' })
-       .moveDown();
+       .text(personalInfo.phone, { align: 'center' });
+
+    if (personalInfo.address) {
+      doc.text(personalInfo.address, { align: 'center' });
+    }
+    doc.moveDown();
 
     // Add social links
     if (personalInfo.linkedin || personalInfo.github) {
-      doc.fontSize(10)
-         .text(`LinkedIn: ${personalInfo.linkedin}    GitHub: ${personalInfo.github}`, {
-           align: 'center',
-           link: personalInfo.linkedin
-         })
-         .moveDown();
+      doc.fontSize(10);
+      
+      if (personalInfo.linkedin) {
+        doc.text(`LinkedIn: ${personalInfo.linkedin}`, {
+          align: 'center',
+          link: personalInfo.linkedin
+        });
+      }
+      
+      if (personalInfo.github) {
+        doc.text(`GitHub: ${personalInfo.github}`, {
+          align: 'center',
+          link: personalInfo.github
+        });
+      }
+      doc.moveDown();
     }
 
     // Add professional summary
@@ -80,9 +94,9 @@ router.post('/generate-resume', async (req, res) => {
            .font('Helvetica-Bold')
            .text(edu.institution)
            .font('Helvetica')
-           .text(`${edu.degree} in ${edu.major}`)
+           .text(`${edu.degree}${edu.major ? ` in ${edu.major}` : ''}`)
            .text(`${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}`)
-           .text(`${edu.percentage}`)
+           .text(`${edu.percentage ? `CGPA/Percentage: ${edu.percentage}` : ''}`)
            .moveDown();
       });
     }
@@ -114,9 +128,16 @@ router.post('/generate-resume', async (req, res) => {
            .text(` (${formatDate(project.startDate)} - ${formatDate(project.endDate)})`)
            .fontSize(11)
            .text(project.description)
-           .text(`Technologies: ${project.technologies}`)
-           .text(`Link: ${project.link}`)
-           .moveDown();
+           .text(`Technologies: ${project.technologies}`, { 
+             continued: project.link ? true : false 
+           });
+        
+        if (project.link) {
+          doc.text(`  |  Link: ${project.link}`, { 
+            link: project.link 
+          });
+        }
+        doc.moveDown();
       });
     }
 
@@ -124,14 +145,14 @@ router.post('/generate-resume', async (req, res) => {
     if (Object.values(skills).some(skillArray => skillArray.length > 0)) {
       addSection('Skills', doc.y);
       Object.entries(skills).forEach(([category, skillList]) => {
-        if (skillList.length > 0) {
+        if (skillList.length > 0 && skillList[0] !== '') { // Only add if there are non-empty skills
           doc.fontSize(12)
              .font('Helvetica-Bold')
              .text(category.replace(/([A-Z])/g, ' $1').trim() + ': ', {
                continued: true
              })
              .font('Helvetica')
-             .text(skillList.join(', '))
+             .text(skillList.filter(skill => skill).join(', ')) // Filter out empty skills
              .moveDown();
         }
       });
@@ -141,14 +162,16 @@ router.post('/generate-resume', async (req, res) => {
     if (achievements.length > 0) {
       addSection('Achievements', doc.y);
       achievements.forEach(achievement => {
-        doc.fontSize(12)
-           .font('Helvetica-Bold')
-           .text(achievement.title, { continued: true })
-           .font('Helvetica')
-           .text(` (${formatDate(achievement.date)})`)
-           .fontSize(11)
-           .text(achievement.description)
-           .moveDown();
+        if (achievement.title) { // Only add if there's a title
+          doc.fontSize(12)
+             .font('Helvetica-Bold')
+             .text(achievement.title, { continued: true })
+             .font('Helvetica')
+             .text(achievement.date ? ` (${formatDate(achievement.date)})` : '')
+             .fontSize(11)
+             .text(achievement.description)
+             .moveDown();
+        }
       });
     }
 
@@ -156,24 +179,29 @@ router.post('/generate-resume', async (req, res) => {
     if (positionsOfResponsibility.length > 0) {
       addSection('Positions of Responsibility', doc.y);
       positionsOfResponsibility.forEach(position => {
-        doc.fontSize(12)
-           .font('Helvetica-Bold')
-           .text(position.position)
-           .text(position.organization, { continued: true })
-           .font('Helvetica')
-           .text(` (${formatDate(position.startDate)} - ${formatDate(position.endDate)})`)
-           .fontSize(11)
-           .text(position.description)
-           .moveDown();
+        if (position.position) { // Only add if there's a position
+          doc.fontSize(12)
+             .font('Helvetica-Bold')
+             .text(position.position)
+             .text(position.organization, { continued: true })
+             .font('Helvetica')
+             .text(` (${formatDate(position.startDate)} - ${formatDate(position.endDate)})`)
+             .fontSize(11)
+             .text(position.description)
+             .moveDown();
+        }
       });
     }
 
+    // Get the total page count
+    const totalPages = doc.bufferedPageRange().count;
+
     // Add page numbers
-    const pages = doc.bufferedPageRange();
-    for (let i = 0; i < pages.count; i++) {
-      doc.switchToPage(i);
+    for (let i = 1; i <= totalPages; i++) {
+      doc.switchToPage(i - 1);
       doc.fontSize(10)
-         .text(`Page ${i + 1} of ${pages.count}`,
+         .text(
+           `Page ${i} of ${totalPages}`,
            50,
            doc.page.height - 50,
            { align: 'center' }

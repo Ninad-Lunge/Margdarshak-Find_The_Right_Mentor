@@ -94,3 +94,32 @@ exports.mentorLogin = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error logging in', error: error.message });
   }
 };
+
+
+
+// Follow a mentor
+exports.followMentor = async (req, res) => {
+  const { mentorId } = req.params;
+  const menteeId = req.user.id; // Assume authenticated mentee's ID is in req.user (use middleware)
+
+  try {
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentor not found' });
+    }
+
+    // Check if mentee already follows the mentor
+    if (mentor.followers.includes(menteeId)) {
+      return res.status(400).json({ success: false, message: 'You are already following this mentor.' });
+    }
+
+    // Add mentee to mentor's followers
+    mentor.followers.push(menteeId);
+    mentor.followerCount = mentor.followers.length; // Update follower count
+    await mentor.save();
+
+    res.status(200).json({ success: true, message: 'Followed mentor successfully', mentor });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error following mentor', error: error.message });
+  }
+};

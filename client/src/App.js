@@ -13,12 +13,14 @@ import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
+import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   return isLoggedIn ? children : <Navigate to="/login" />;
 };
+
 
 function App() {
   const [initialPath, setInitialPath] = useState('/');
@@ -113,6 +115,7 @@ function App() {
           }
         />
       </Routes>
+      <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
     </BrowserRouter>
   );
 }

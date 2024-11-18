@@ -15,10 +15,13 @@ const MenteeDashBoard = () => {
         setError(null);
         try {
             const token = localStorage.getItem('token');
+            const menteeId = localStorage.getItem('menteeId');
+
             if (!token) {
                 setError('No authentication token found. Please log in.');
                 return;
             }
+
 
             const response = await axios.get('/api/availability/confirmed', {
                 headers: { Authorization: `Bearer ${token}` },

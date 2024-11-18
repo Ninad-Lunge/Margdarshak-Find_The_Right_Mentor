@@ -1,70 +1,79 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 import Navbar from '../../Components/Mentee/MenteeNavbar.jsx';
-// import logo from '../../Assets/MentorHands.png';
 
-import { FaEnvelope, FaYoutube, FaGithub, FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
+import { FaEnvelope, FaYoutube, FaGithub, FaTwitter, FaLinkedin, FaInstagram, FaGlobe } from "react-icons/fa";
 
-
-
-// const MentorDashboard = () => {
-//     const navigate = useNavigate();
-
-
-const MentorProfile = ({ mentorId, token }) => {
+const MentorProfile = () => {
+    const [mentorData, setMentorData] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
-    const navigate = useNavigate();
-  
-    const handleFollow = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        console.log('Token: ' + token);
+    const mentorId = localStorage.getItem('mentorId'); // Assume the mentor ID is stored in localStorage
 
-        const response = await fetch(`/api/mentors/${mentorId}/follow`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Pass mentee's token for authentication
-          },
-        });
-  
-        const data = await response.json();
-  
-        if (data.success) {
-          setIsFollowing(true);
-          alert('You are now following this mentor!');
-        } else {
-          alert(`Error: ${data.message}`);
+    useEffect(() => {
+        const fetchFollowStatus = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/mentor/${mentorId}/is-following`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await response.json();
+                if (data.success) {
+                    setIsFollowing(data.isFollowing);
+                }
+            } catch (error) {
+                console.error('Error checking follow status:', error);
+            }
+        };
+
+        const fetchMentorData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/mentor/${mentorId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await response.json();
+                if (data.success) {
+                    setMentorData(data.mentor);
+                }
+            } catch (error) {
+                console.error('Error fetching mentor data:', error);
+            }
+        };
+
+        fetchFollowStatus();
+        fetchMentorData();
+    }, [mentorId]);
+
+    const toggleFollow = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/mentor/${mentorId}/follow`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setIsFollowing(!isFollowing);
+                //realtime update
+                const newFollowerCount = isFollowing ? mentorData.followerCount - 1 : mentorData.followerCount + 1;
+                setMentorData({
+                    ...mentorData,
+                    followerCount: newFollowerCount,
+                });
+
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error('Error toggling follow status:', error);
+            alert('An error occurred.');
         }
-      } catch (error) {
-        console.error('Error following mentor:', error);
-        alert('An error occurred while following the mentor.');
-      }
-    };
-  
-
-    // Mock mentor data
-    const mentorData = {
-        profileImage: '/default-profile.png', // Replace with actual image path
-        firstName: 'John',
-        lastName: 'Doe',
-        industry: 'Technology',
-        location: 'New York',
-        stats: {
-            totalSessions: 25,
-            mentees: 10,
-            workshops: 5,
-        },
-        upcomingMeetings: [
-            { topic: 'Career Guidance', time: '2:00 PM' },
-            { topic: 'Mock Interview', time: '4:00 PM' },
-        ],
     };
 
-    const handleNavigation = () => {
-        navigate('/add-slots');
-    };
 
     return (
         <div className="mentor min-h-screen bg-gray-50">
@@ -74,14 +83,14 @@ const MentorProfile = ({ mentorId, token }) => {
                 {/* Sidebar */}
                 <div className="col-span-1 border border-black rounded-md py-8 bg-white shadow-md ">
                     <img
-                        src={mentorData.profileImage}
+                        src="hhbootstrap"
                         alt="Mentor Profile"
                         className="mentor-img border border-gray-300 rounded-full h-32 w-32 mx-auto"
                     />
                     <h1 className="mentor-name mt-4 text-xl font-bold text-center">
-                        {mentorData.firstName} {mentorData.lastName}
+                        {mentorData?.firstName} {mentorData?.lastName}
                     </h1>
-                    <p className="text-center text-gray-600 mt-2">Position: {mentorData.industry}</p>
+                    <p className="text-center text-gray-600 mt-2">Job Title: {mentorData?.jobTitle}</p>
                     <div className=" flex justify-center gap-5 mt-2 text-gray-700">
                         <span className="text-lg font-medium ">Rating:</span>
                         <div className="flex justify-center mt-1">
@@ -93,19 +102,14 @@ const MentorProfile = ({ mentorId, token }) => {
                             <span className="text-gray-300">★</span>
                         </div>
                     </div>
-                    {/* <button className="mt-4 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mx-auto block">
-                        Follow
-                    </button> */}
+
+
                     <button
-                        className={`mt-4 px-3 py-1 rounded ${isFollowing ? 'bg-gray-400' : 'bg-blue-500 text-white hover:bg-blue-600 mx-auto block'
+                        className={`mt-4 px-3 py-1 rounded ${isFollowing ? 'mx-auto block bg-green-400' : 'bg-blue-500 text-white hover:bg-blue-600 mx-auto block'
                             }`}
-                        onClick={handleFollow}
-                        disabled={isFollowing}
-                    >
+                        onClick={toggleFollow}>
                         {isFollowing ? 'Following' : 'Follow'}
                     </button>
-
-
                 </div>
 
 
@@ -114,15 +118,15 @@ const MentorProfile = ({ mentorId, token }) => {
                     <h2 className="text-lg font-bold text-center">Your Stats</h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                         <div className="text-center">
-                            <h3 className="text-2xl font-bold">{mentorData.stats.totalSessions}</h3>
+                            <h3 className="text-2xl font-bold">{mentorData?.followerCount}</h3>
                             <p className="text-gray-600">Followers</p>
                         </div>
                         <div className="text-center">
-                            <h3 className="text-2xl font-bold">{mentorData.stats.mentees}</h3>
+                            <h3 className="text-2xl font-bold">52</h3>
                             <p className="text-gray-600">Community Created</p>
                         </div>
                         <div className="text-center">
-                            <h3 className="text-2xl font-bold">{mentorData.stats.workshops}</h3>
+                            <h3 className="text-2xl font-bold">5</h3>
                             <p className="text-gray-600">Workshops</p>
                         </div>
                     </div>
@@ -170,7 +174,7 @@ const MentorProfile = ({ mentorId, token }) => {
                         <div className="flex items-center justify-center gap-4">
                             <h3 className="text-gray-800 font-medium">Sunday 04 August 2024</h3>
                             <button
-                                onClick={handleNavigation}
+                                // onClick={handleNavigation}
                                 className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition">
                                 Book
                             </button>
@@ -179,7 +183,7 @@ const MentorProfile = ({ mentorId, token }) => {
                         <div className="mt-2 flex items-center justify-center gap-4">
                             <h3 className="text-gray-800 font-medium">Sunday 30 August 2024</h3>
                             <button
-                                onClick={handleNavigation}
+                                // onClick={handleNavigation}
                                 className="bg-blue-500 text-white px-2 py-1  rounded hover:bg-blue-600 transition">
                                 Book
                             </button>
@@ -192,25 +196,25 @@ const MentorProfile = ({ mentorId, token }) => {
                         <div className="flex justify-start mt-6 space-x-4">
                             {/* Gmail */}
                             <a
-                                href="mailto:your-email@gmail.com"
+                                href={mentorData?.email}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-black-600 hover:text-red-800"
                             >
                                 <FaEnvelope size={30} />
                             </a>
-                            {/* Facebook */}
+                            {/* website */}
                             <a
-                                href="https://www.facebook.com/yourprofile"
+                                href={mentorData?.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800"
                             >
-                                <FaFacebook size={30} /> </a>
+                                <FaGlobe size={30} /> </a>
 
                             {/* LinkedIn */}
                             <a
-                                href="https://www.linkedin.com/in/yourprofile"
+                                href={mentorData?.linkedin}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-700 hover:text-blue-900"
@@ -218,7 +222,7 @@ const MentorProfile = ({ mentorId, token }) => {
                                 <FaLinkedin size={30} /> </a>
                             {/* Twitter */}
                             <a
-                                href="https://www.twitter.com/yourprofile"
+                                href={mentorData?.twitter}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-black-400 hover:text-blue-600"
@@ -242,6 +246,7 @@ const MentorProfile = ({ mentorId, token }) => {
                                 className="text-red-500 hover:text-red-700"
                             >
                                 <FaYoutube size={30} />
+
                             </a>
                             {/* GitHub */}
                             <a
@@ -258,14 +263,12 @@ const MentorProfile = ({ mentorId, token }) => {
 
             </div>
 
-            {/* Community Section */}
+            {/* Bio section*/}
             <div className=" h-60 border mt-3 p-5 mx-6 gap-3 border-black rounded-md">
                 About
-                <p className='text-sm'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam massa diam, feugiat eu venenatis eget, molestie vel sem. Nullam elementum mi scelerisque enim scelerisque, et consequat magna finibus. Integer dapibus justo a tellus pellentesque facilisis. Quisque sit amet laoreet est. Ut pulvinar orci semper pretium tempor. Aliquam congue neque vel erat ultricies tempor. Suspendisse ultricies nisi sagittis, tempor lorem ac, condimentum libero. Phasellus non lorem sed augue rutrum accumsan non in metus. Nam ultrices cursus sollicitudin. Praesent scelerisque et ipsum ut hendrerit. Nunc vulputate malesuada turpis, ac rhoncus purus tristique eu. Vestibulum in accumsan felis, quis iaculis leo. Sed quam justo, rutrum at congue non, tempor aliquam arcu. Mauris id accumsan augue.</p>
+                <p className='text-sm'>{mentorData?.bio}</p>
             </div>
 
-
-            {/* </div> */}
         </div>
     );
 };

@@ -82,8 +82,8 @@ const Navbar = () => {
                     Build Resume
                 </Link>
                 <Link
-                    to="/mentorprofilebymentee"
-                    className={`px-4 py-2 md:p-0 ${isActive('/mentorprofilebymentee')}`}
+                    to="/profile"
+                    className={`px-4 py-2 md:p-0 ${isActive('/profile')}`}
                 >
                     Profile
                 </Link>

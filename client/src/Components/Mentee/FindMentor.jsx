@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import Navbar from './MenteeNavbar';
 import { ToastContainer, toast, Slide } from 'react-toastify';
@@ -8,10 +10,23 @@ const MenteeBooking = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     fetchAvailableSlots();
   }, []);
+
+  const handleChange = (slot) => {
+    if (slot) {
+      localStorage.setItem('mentorId', slot.mentorId._id);
+      console.log(slot.mentorId._id);
+
+      navigate('/mentorprofilebymentee');
+    } else {
+      console.error('Slot or mentorId is undefined');
+    }
+  };
 
   const fetchAvailableSlots = async () => {
     setIsLoading(true);
@@ -22,11 +37,11 @@ const MenteeBooking = () => {
         setError('No authentication token found. Please log in.');
         return;
       }
-  
+
       const response = await axios.get('/api/availability/mentor', {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (Array.isArray(response.data)) {
         // Add some console logging for debugging
         console.log('Fetched slots:', response.data);
@@ -108,12 +123,12 @@ const MenteeBooking = () => {
         transition={Slide}
         className="mt-14"
       />
-      
+
       <div className="container mx-auto px-4 mt-5">
         <h1 className="text-2xl font-semibold text-center mb-6 text-[#3B50D5]">
           Available Slots for Mentoring
         </h1>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
@@ -124,6 +139,7 @@ const MenteeBooking = () => {
           {availableSlots.length > 0 ? (
             availableSlots.map((slot) => (
               <div
+
                 key={slot._id}
                 className="bg-white shadow-lg rounded-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300"
               >
@@ -161,6 +177,7 @@ const MenteeBooking = () => {
                   >
                     Book Slot
                   </button>
+
                 )}
               </div>
             ))

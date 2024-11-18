@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const MenteeDashboard = () => {
+const MenteeDashBoard = () => {
     const [upcomingSlots, setUpcomingSlots] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,6 +17,8 @@ const MenteeDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
+            const menteeId = localStorage.getItem('menteeId');
+
             if (!token) {
                 setError('No authentication token found. Please log in.');
                 return;
@@ -122,4 +124,4 @@ const MenteeDashboard = () => {
     );
 }
 
-export default MenteeDashboard;
+export default MenteeDashBoard;

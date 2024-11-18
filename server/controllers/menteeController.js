@@ -1,18 +1,85 @@
 const Mentee = require('../models/Mentee');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { validateEmail } = require('../utils/validation');
 
-// Create a mentee
 exports.createMentee = async (req, res) => {
-    const { password, ...menteeData } = req.body;
-
     try {
+        const { 
+            firstName, 
+            lastName, 
+            email, 
+            password, 
+            phone = '', 
+            skills = '', 
+            linkedin = '', 
+            github = '', 
+            role = 'Mentee' 
+        } = req.body;
+
+        // Validation checks
+        if (!firstName || !lastName) {
+            return res.status(400).json({ message: 'First and last name are required' });
+        }
+
+        if (!validateEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        // if (!validatePassword(password)) {
+        //     return res.status(400).json({ 
+        //         message: 'Password must be at least 8 characters long, include uppercase, lowercase, number, and special character' 
+        //     });
+        // }
+
+        // Check if mentee already exists
+        const existingMentee = await Mentee.findOne({ email });
+        if (existingMentee) {
+            return res.status(400).json({ message: 'Mentee with this email already exists' });
+        }
+
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        const mentee = new Mentee({ ...menteeData, password: hashedPassword });
-        await mentee.save();
-        res.status(201).json({ success: true, mentee });
+
+        // Convert skills to array if it's a string
+        const skillsArray = typeof skills === 'string' 
+            ? skills.split(',').map(skill => skill.trim())
+            : skills;
+
+        // Create new mentee
+        const newMentee = new Mentee({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            phone,
+            skills: skillsArray,
+            linkedin,
+            github,
+            role
+        });
+
+        // Save mentee
+        await newMentee.save();
+
+        // Generate token
+        const token = jwt.sign({ id: newMentee._id }, process.env.JWT_SECRET, { expiresIn: '12h' });
+
+        // Prepare response (remove sensitive data)
+        const menteeResponse = newMentee.toObject();
+        delete menteeResponse.password;
+
+        res.status(201).json({
+            ...menteeResponse,
+            token
+        });
+
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error creating mentee', error: error.message });
+        console.error('Registration Error:', error);
+        res.status(500).json({ 
+            message: 'Server error during registration',
+            error: error.message 
+        });
     }
 };
 

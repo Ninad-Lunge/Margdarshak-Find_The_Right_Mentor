@@ -10,6 +10,7 @@ const MentorRegister = () => {
         firstName: '',
         lastName: '',
         email: '',
+        image: '',
         password: '',
         confirmPassword: '',
         jobTitle: '',
@@ -116,9 +117,13 @@ const MentorRegister = () => {
                             <label>Last Name</label>
                             <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                         </div>
-                        <div className="form-group col-span-2">
+                        <div className="form-group col-span-1">
                             <label>Email</label>
                             <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
+                        </div>
+                        <div className="form-group">
+                            <label>Profile Image URL</label>
+                            <input type="text" name="image" value={formData.image} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
                         </div>
                         <div className="form-group">
                             <label>Password</label>

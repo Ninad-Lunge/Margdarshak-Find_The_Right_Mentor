@@ -6,13 +6,15 @@ import { toast } from 'react-toastify';
 const MenteeDashboard = () => {
     const [upcomingSlots, setUpcomingSlots] = useState([]);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchUpcomingSlots();
+        fetchMenteeConfirmedSlots();
     }, []);
 
-    const fetchUpcomingSlots = async () => {
+    const fetchMenteeConfirmedSlots = async () => {
         setError(null);
+        setLoading(true);
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -20,7 +22,7 @@ const MenteeDashboard = () => {
                 return;
             }
 
-            const response = await axios.get('/api/availability/confirmed', {
+            const response = await axios.get('/api/availability/mentee/confirmed', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -32,9 +34,11 @@ const MenteeDashboard = () => {
             }
         } catch (error) {
             console.error('Error details:', error.response || error);
-            const errorMessage = error.response?.data?.error || error.message || 'Failed to load available slots';
+            const errorMessage = error.response?.data?.error || error.message || 'Failed to load confirmed slots';
             setError(errorMessage);
             toast.error(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -44,15 +48,29 @@ const MenteeDashboard = () => {
 
             <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
                 <div className="flex flex-col col-span-2 gap-y-4">
-                    <div className="upcoming-meetings h-64 shadow rounded-md bg-white">
+                    <div className="upcoming-meetings shadow rounded-md bg-white h-auto pb-2">
                         <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
 
-                        {error && <p className="text-red-500">{error}</p>}
+                        {loading && (
+                            <div className="flex justify-center items-center h-32">
+                                <p className="text-gray-500">Loading...</p>
+                            </div>
+                        )}
 
-                        <div className="flex space-y-2 m-4">
-                            {upcomingSlots.map((slot, index) => (
+                        {error && (
+                            <div className="m-4">
+                                <p className="text-red-500">{error}</p>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-3 gap-2 mx-2">
+                            {!loading && upcomingSlots.length === 0 && (
+                                <p className="text-gray-500 text-center">No upcoming meetings scheduled</p>
+                            )}
+                            
+                            {upcomingSlots.map((slot) => (
                                 <div
-                                    key={index}
+                                    key={slot._id}
                                     className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
                                 >
                                     <div className="mb-2">
@@ -66,25 +84,28 @@ const MenteeDashboard = () => {
                                         <div className="space-y-1 text-gray-600 col-span-2">
                                             <div className="flex items-center space-x-1 text-sm">
                                                 <span className="font-medium">Date:</span>
-                                                <span>{new Date(slot.date).toLocaleDateString()}</span>
+                                                <span>{slot.formattedDate}</span>
                                             </div>
                                             <div className="flex items-center space-x-1 text-sm">
                                                 <span className="font-medium">Time:</span>
                                                 <span>{slot.startTime} - {slot.endTime}</span>
                                             </div>
                                         </div>
-                                        <div className="flex">
-                                            <a
-                                                href={slot.meetLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
-                                            >
-                                                Join Meet
-                                            </a>
+                                        <div className="flex justify-end">
+                                            {slot.meetLink ? (
+                                                <a
+                                                    href={slot.meetLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
+                                                >
+                                                    Join Meet
+                                                </a>
+                                            ) : (
+                                                <span className="text-gray-400 text-sm">No meeting link yet</span>
+                                            )}
                                         </div>
                                     </div>
-
                                 </div>
                             ))}
                         </div>

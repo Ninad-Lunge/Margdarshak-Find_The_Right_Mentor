@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Mentor/MentorNavbar';
 import 'react-time-picker/dist/TimePicker.css';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MentorDashboard = () => {
@@ -45,6 +45,10 @@ const MentorDashboard = () => {
     navigate('/add-slots');
   };
 
+  const handleEditProfile = () => {
+    navigate('/mentor-profile');
+  };
+
   useEffect(() => {
     fetchConfirmedSlots();
   }, []);
@@ -76,6 +80,30 @@ const MentorDashboard = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No authentication token found. Please log in.');
+        return;
+      }
+  
+      const response = await axios.delete(`/api/availability/delete-slot/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (response.status === 200) {
+        toast.success('Slot deleted successfully');
+        fetchConfirmedSlots();
+      } else {
+        toast.error('Failed to delete slot');
+      }
+    } catch (error) {
+      console.error('Error deleting slot:', error.response || error);
+      setError('Error Deleting Slot');
+    }
+  };  
+
   if (!mentorData) {
     return <div>Loading mentor data...</div>;
   }
@@ -83,7 +111,7 @@ const MentorDashboard = () => {
   return (
     <div className="mentor min-h-screen bg-gray-50">
       <Navbar />
-
+      <ToastContainer />
       <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
 
         <div className="col-span-3">
@@ -91,16 +119,17 @@ const MentorDashboard = () => {
             {/* Sidebar */}
             <div className="py-8 bg-white shadow rounded-lg">
               <img
-                src={mentorData.profileImage || '/default-profile.png'}
+                src={mentorData.image || '../../Assets/logo.png'}
                 alt="Mentor Profile"
                 className="mentor-img border border-black rounded-full h-36 w-36 mx-auto mt-2"
+                onError={(e) => { e.target.src = '../../Assets/logo.png'; }}
               />
               <h1 className="mentor-name mt-8 mx-auto text-center">
                 {mentorData.firstName} {mentorData.lastName}
               </h1>
               <p className="text-center text-gray-600">Industry: {mentorData.industrywork}</p>
               <p className="text-center text-gray-600">Location: New York</p>
-              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block">
+              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block" onClick={handleEditProfile}>
                 Edit Profile
               </button>
             </div>
@@ -154,11 +183,17 @@ const MentorDashboard = () => {
                 key={index}
                 className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
               >
-                <div className="mb-2">
-                  <h3 className="text-md font-medium">
+                <div className="mb-2 grid grid-cols-3">
+                  <h3 className="text-md font-medium col-span-2">
                     Mentee: {slot.menteeId?.firstName || 'Not specified'}
                     {slot.menteeId?.lastName ? ` ${slot.menteeId.lastName}` : ''}
                   </h3>
+                  <button 
+                    className='px-1 py-1 border border-green-500 rounded-md hover:bg-green-500 hover:text-white'
+                    onClick={() => handleDelete(slot._id) }
+                  >
+                    Done
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-3">
@@ -177,7 +212,7 @@ const MentorDashboard = () => {
                       href={slot.meetLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
+                      className="text-blue-500 text-sm px-2 py-2 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white w-full text-center"
                     >
                       Join Meet
                     </a>

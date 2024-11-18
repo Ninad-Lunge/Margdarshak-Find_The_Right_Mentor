@@ -43,11 +43,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to={initialPath} />} />
+        <Route exact path="/" element={<Navigate to={initialPath} />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentee-register" element={<MenteeRegister />} />
+        <Route path="/resume-builder" element={<ResumeBuilder />}/>
 
         {/* Protected Routes */}
         <Route
@@ -103,14 +104,6 @@ function App() {
           element={
             <ProtectedRoute>
               <MentorProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/resume-builder"
-          element={
-            <ProtectedRoute>
-              <ResumeBuilder />
             </ProtectedRoute>
           }
         />

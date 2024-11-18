@@ -11,7 +11,8 @@ const meetingRoutes = require('./routes/meetings');
 const loginRoutes = require('./routes/login');
 const slots = require('./routes/availability');
 const resumeRoutes = require('./routes/resume');
-const scheduleRoutes = require('./routes/scheduleMeet');
+const authRoutes = require('./routes/auth');
+const resumeParserRoutes = require('./routes/resumeParser');
 
 // Middleware
 app.use(cors());
@@ -29,10 +30,8 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/availability', slots);
 app.use('/api', resumeRoutes);
-// app.use('/api', scheduleRoutes);
-
-const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+app.use('/api/', resumeParserRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Server');

@@ -1,6 +1,9 @@
 {
-  "dependencies": {
-    "lucide-react": "^0.456.0",
-    "react-toastify": "^10.0.6"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run start-server && npm run start-client",
+    "start-server": "cd server && npm start",
+    "start-client": "cd client && npm start",
+    "dev": "nodemon app.js"
   }
 }

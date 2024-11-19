@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../Assets/logo.png';
+import mentorpic from '../../Assets/mentorpic.png';
 
 import axios from 'axios';
 import Navbar from './MenteeNavbar';
@@ -22,6 +22,7 @@ const MenteeBooking = () => {
     if (slot) {
       localStorage.setItem('mentorId', slot.mentorId._id);
       console.log(slot.mentorId._id);
+
 
       navigate('/mentorprofilebymentee');
     } else {
@@ -47,6 +48,7 @@ const MenteeBooking = () => {
         // Add some console logging for debugging
         console.log('Fetched slots:', response.data);
         setAvailableSlots(response.data);
+
       } else {
         console.error('Unexpected response format:', response.data);
         setError('Invalid data format received from server');
@@ -152,7 +154,7 @@ const MenteeBooking = () => {
                         {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
                       </p>
                       <p className="text-gray-600 text-sm">
-                        Expertise: {slot.mentorId?.industrywork || 'Not specified'}
+                        Expertise: {slot.mentorId?.domain || 'Not specified'}
                       </p>
                     </div>
 
@@ -168,10 +170,11 @@ const MenteeBooking = () => {
 
                   <div className="flex flex-col items-center justify-center space-y-4">
                     <img
-                      src={slot.mentorId?.image || {logo}} 
+                     src= {slot.mentorId?.image || mentorpic}
                       alt="Mentor"
                       className="h-20 w-20 rounded-full border border-black"
                     />
+
                     <button
                       onClick={() => handleChange(slot)}
                       className="bg-green-500 text-white  text-sm px-2 py-1 rounded-lg hover:bg-green-600 transition duration-300 transform hover:-translate-y-1"

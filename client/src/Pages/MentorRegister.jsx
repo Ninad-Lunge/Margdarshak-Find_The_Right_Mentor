@@ -16,27 +16,29 @@ const MentorRegister = () => {
         jobTitle: '',
         company: '',
         location: '',
-        industrywork: '',
         skills: '',
         bio: '',
         linkedin: '',
         twitter: '',
-        website: '',
-        introVideo: '',
-        featuredArticles: '',
+        website: '',   
         whyMentor: '',
-        greatestAchievement: '',
-
+        
         //for recommendation engine
         industry:'',
-        companytype:'',
-        noofmentoredstudent:'',
         domain:'',
         subdomain:'',
-        noofprojects:'',
         yearofexperience:'',
-        technologies:'',
         positionofmentors:''
+
+                // industrywork: '',
+                // introVideo: '',
+                // featuredArticles: '',
+                // greatestAchievement: '',
+                // companytype:'',
+                // noofmentoredstudent:'',
+                // technologies:'',
+                // noofprojects:'',
+
     });
 
     const handleChange = (e) => {
@@ -137,10 +139,7 @@ const MentorRegister = () => {
                             <label>Company</label>
                             <input type="text" name="company" value={formData.company} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                         </div>
-                        <div className="form-group">
-                            <label>Company Type</label>
-                            <input type="text" name="companytype" value={formData.companytype} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
+                       
                         <div className="form-group">
                             <label>JobTitle</label>
                             <input type="text" name="jobTitle" value={formData.jobTitle} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
@@ -156,10 +155,7 @@ const MentorRegister = () => {
                     {/* Step 2: Profile Section */}
                     {currentStep === 2 && (
                         <>
-                        <div className="form-group">
-                            <label>Industry of Work</label>
-                            <input type="text" name="industrywork" value={formData.industrywork} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
+                        
                         <div className="form-group">
                             <label>Skills</label>
                             <input type="text" name="skills" value={formData.skills} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
@@ -172,10 +168,7 @@ const MentorRegister = () => {
                             <label>Industry</label>
                             <input type="text" name="industry" value={formData.industry} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
                         </div>
-                        <div className="form-group">
-                            <label>Technologies</label>
-                            <input type="text" name="technologies" value={formData.technologies} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
+                      
                         <div className="form-group">
                             <label>LinkedIn URL</label>
                             <input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
@@ -194,19 +187,13 @@ const MentorRegister = () => {
                      {/* Step 3: recommendation engine Section */}
                      {currentStep === 3 && (
                         <>
-                        <div className="form-group">
-                        <label>No. of Projects</label>
-                            <input type="text" name="noofprojects" value={formData.noofprojects} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
+                       
                         <div className="form-group">
                             <label>Year of Experience</label>
                             <input type="text" name="yearofexperience" value={formData.yearofexperience} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
                         </div>
                         
-                        <div className="form-group">
-                            <label>No. of Mentored Student</label>
-                            <input type="text" name="noofmentoredstudent" value={formData.noofmentoredstudent} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
+                       
                         <div className="form-group">
                             <label>Current Position</label>
                             <input type="text" name="positionofmentors" value={formData.positionofmentors} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
@@ -219,37 +206,19 @@ const MentorRegister = () => {
                             <label>Subdomain</label>
                             <input type="text" name="subdomain" value={formData.subdomain} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                         </div>
-                        </>
-                    )}
-
-                     {/* Step 4: Experience Section */}
-                     {currentStep === 4 && (
-                        <>
-                        <div className="form-group">
-                        <label>Intro Video Link</label>
-                            <input type="text" name="introVideo" value={formData.introVideo} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
-                        <div className="form-group">
-                            <label>Featured Article Links</label>
-                            <input type="text" name="featuredArticles" value={formData.featuredArticles} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" />
-                        </div>
-                        
                         <div className="form-group">
                             <label>Why do you want to become a mentor?</label>
                             <textarea name="whyMentor" value={formData.whyMentor} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
                         </div>
-                        <div className="form-group">
-                            <label>Greatest Achievement</label>
-                            <textarea name="greatestAchievement" value={formData.greatestAchievement} onChange={handleChange} className="w-full px-4 py-2 border rounded-md" required />
-                        </div>
                         </>
                     )}
+
 
                     {/* Navigation Buttons */}
                     <div className="form-navigation mt-4 flex justify-between gap-32 col-span-2">
                         {currentStep > 1 && <button type="button" className="px-4 py-2 bg-gray-300 border rounded-md w-[150px]" onClick={handlePrev}>Previous</button>}
-                        {currentStep < 4 && <button type="button" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]" onClick={handleNext}>Next</button>}
-                        {currentStep === 4 && <button type="submit" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]">Submit</button>}
+                        {currentStep < 3 && <button type="button" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]" onClick={handleNext}>Next</button>}
+                        {currentStep === 3 && <button type="submit" className="px-4 py-2 bg-green-500 text-white border rounded-md w-[150px]">Submit</button>}
                     </div>
                     </form>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../Assets/logo.png';
 
 import axios from 'axios';
 import Navbar from './MenteeNavbar';
@@ -143,7 +144,7 @@ const MenteeBooking = () => {
                 key={slot._id}
                 className="bg-white shadow-lg rounded-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300"
               >
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2">
                     <div className="mb-4">
                       <p className="text-lg font-semibold text-gray-800">
@@ -154,7 +155,7 @@ const MenteeBooking = () => {
                         Expertise: {slot.mentorId?.industrywork || 'Not specified'}
                       </p>
                     </div>
-                    
+
                     <div className="mb-4 space-y-2">
                       <p className="text-gray-700">
                         <span className="font-medium">Date:</span> {slot.formattedDate || new Date(slot.date).toLocaleDateString()}
@@ -165,15 +166,26 @@ const MenteeBooking = () => {
                     </div>
                   </div>
 
-                  <div className='flex items-start mx-auto'>
-                    <img src={slot.mentorId?.image} alt="Mentor" className='h-24 w-24 rounded-full border border-black'/>
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    <img
+                      src={slot.mentorId?.image || {logo}} 
+                      alt="Mentor"
+                      className="h-20 w-20 rounded-full border border-black"
+                    />
+                    <button
+                      onClick={() => handleChange(slot)}
+                      className="bg-green-500 text-white  text-sm px-2 py-1 rounded-lg hover:bg-green-600 transition duration-300 transform hover:-translate-y-1"
+                    >
+                      View Profile
+                    </button>
                   </div>
                 </div>
+
 
                 {slot.status === 'available' && (
                   <button
                     onClick={() => bookSlot(slot._id)}
-                    className="w-full text-blue-500 hover:text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300 transform hover:-translate-y-1 border border-blue-500"
+                    className="w-full mt-4 text-blue-500 hover:text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300 transform hover:-translate-y-1 border border-blue-500"
                   >
                     Book Slot
                   </button>

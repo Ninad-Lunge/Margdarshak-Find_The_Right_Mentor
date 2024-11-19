@@ -96,37 +96,42 @@ exports.mentorLogin = async (req, res) => {
 };
 
 
-
-// Follow or unfollow a mentor
 exports.toggleFollowMentor = async (req, res) => {
   const { mentorId } = req.params;
-  const menteeId = req.user.id; 
+  const menteeId = req.user?.id;
+
+  console.log('Mentor ID:', mentorId);
+  console.log('Mentee ID:', menteeId);
 
   try {
-    const mentor = await Mentor.findById(mentorId);
-    if (!mentor) {
-      return res.status(404).json({ success: false, message: 'Mentor not found' });
-    }
+      const mentor = await Mentor.findById(mentorId);
+      if (!mentor) {
+          console.log('Mentor not found');
+          return res.status(404).json({ success: false, message: 'Mentor not found' });
+      }
 
-    // Check if mentee already follows the mentor
-    const isFollowing = mentor.followers.includes(menteeId);
+      const isFollowing = mentor.followers.includes(menteeId);
+      console.log('Is Following:', isFollowing);
 
-    if (isFollowing) {
-      mentor.followers = mentor.followers.filter(id => id.toString() !== menteeId.toString());
-      mentor.followerCount = mentor.followers.length; 
-      await mentor.save();
-      return res.status(200).json({ success: true, message: 'Unfollowed mentor successfully', mentor });
-    }
-
-    mentor.followers.push(menteeId);
-    mentor.followerCount = mentor.followers.length; 
-    await mentor.save();
-
-    res.status(200).json({ success: true, message: 'Followed mentor successfully', mentor });
+      if (isFollowing) {
+        await Mentor.updateOne(
+          { _id: mentorId },
+          { $pull: { followers: menteeId }, $set: { followerCount: mentor.followers.length - 1 } }
+        );
+        return res.status(200).json({ success: true, message: 'Unfollowed mentor successfully' });
+      }
+      await Mentor.updateOne(
+        { _id: mentorId },
+        { $push: { followers: menteeId }, $set: { followerCount: mentor.followers.length + 1 } }
+      );
+      res.status(200).json({ success: true, message: 'Followed mentor successfully' });
+      
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error toggling follow status', error: error.message });
+      console.error('Error toggling follow status:', error);
+      res.status(500).json({ success: false, message: 'Error toggling follow status', error: error.message });
   }
 };
+
 
 // Check if mentee follows a mentor
 exports.isFollowingMentor = async (req, res) => {

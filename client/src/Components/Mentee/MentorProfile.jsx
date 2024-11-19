@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 import Navbar from '../../Components/Mentee/MenteeNavbar.jsx';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { FaEnvelope, FaYoutube, FaGithub, FaTwitter, FaLinkedin, FaInstagram, FaGlobe } from "react-icons/fa";
 
 const MentorProfile = () => {
     const [mentorData, setMentorData] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
-    const mentorId = localStorage.getItem('mentorId'); // Assume the mentor ID is stored in localStorage
+    const mentorId = localStorage.getItem('mentorId');
 
     useEffect(() => {
         const fetchFollowStatus = async () => {
@@ -56,32 +58,45 @@ const MentorProfile = () => {
             });
 
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && data.success) {
                 setIsFollowing(!isFollowing);
-                //realtime update
-                const newFollowerCount = isFollowing ? mentorData.followerCount - 1 : mentorData.followerCount + 1;
-                setMentorData({
-                    ...mentorData,
-                    followerCount: newFollowerCount,
-                });
+                const newFollowerCount = isFollowing
+                    ? mentorData.followerCount - 1
+                    : mentorData.followerCount + 1;
+                setMentorData({ ...mentorData, followerCount: newFollowerCount });
+                if (!isFollowing) {
+                    toast.success('You are now following the mentor!');
+                } else {
+                    toast.info('You have unfollowed the mentor.');
+                }
 
             } else {
-                alert(data.message);
+                console.error('Error:', data.message || 'Unknown error');
+                alert(data.message || 'Error toggling follow status');
             }
         } catch (error) {
             console.error('Error toggling follow status:', error);
-            alert('An error occurred.');
+            alert('An error occurred while toggling follow status.');
         }
     };
-
 
     return (
         <div className="mentor min-h-screen bg-gray-50">
             <Navbar />
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                closeOnClick
+                pauseOnHover
+                draggable
+                transition={Slide}
+                className="mt-14"
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-3">
                 {/* Sidebar */}
-                <div className="col-span-1 border border-black rounded-md py-8 bg-white shadow-md ">
+                <div className="col-span-1 border border-black rounded-md py-8 bg-white  ">
                     <img
                         src="hhbootstrap"
                         alt="Mentor Profile"
@@ -105,7 +120,7 @@ const MentorProfile = () => {
 
 
                     <button
-                        className={`mt-4 px-3 py-1 rounded ${isFollowing ? 'mx-auto block bg-green-400' : 'bg-blue-500 text-white hover:bg-blue-600 mx-auto block'
+                        className={`mt-4 px-3 py-1 rounded ${isFollowing ? 'mx-auto block  text-white bg-green-400' : 'bg-blue-500 text-white hover:bg-blue-600 mx-auto block'
                             }`}
                         onClick={toggleFollow}>
                         {isFollowing ? 'Following' : 'Follow'}
@@ -115,7 +130,7 @@ const MentorProfile = () => {
 
                 {/* Stats Section */}
                 <div className="stats col-span-2 border border-black rounded-md bg-white mx-0shadow-md p-6 w-100 ">
-                    <h2 className="text-lg font-bold text-center">Your Stats</h2>
+                    {/* <h2 className="text-lg font-bold text-center">Your Stats</h2> */}
                     <div className="grid grid-cols-3 gap-4 mt-4">
                         <div className="text-center">
                             <h3 className="text-2xl font-bold">{mentorData?.followerCount}</h3>

@@ -62,12 +62,12 @@ exports.deleteMentor = async (req, res) => {
 
 // Search mentors by filters
 exports.searchMentors = async (req, res) => {
-  const { industry, skills, location, company } = req.query;
+  const { industry, Technologies, location, company } = req.query;
 
   try {
     const mentors = await Mentor.find({
       ...(industry && { industry }),
-      ...(skills && { skills: { $regex: skills, $options: 'i' } }),
+      ...(Technologies && { Technologies: { $regex: Technologies, $options: 'i' } }),
       ...(location && { location }),
       ...(company && { company })
     });

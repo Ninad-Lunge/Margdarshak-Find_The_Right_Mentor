@@ -12,7 +12,7 @@ const MentorProfile = () => {
     company: '',
     location: '',
     industry: '',
-    skills: '',
+    Technologies: '',
     bio: '',
     linkedin: '',
     twitter: '',

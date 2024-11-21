@@ -147,7 +147,7 @@ router.get('/mentor', verifyToken, async (req, res) => {
       status: 'available',
       date: { $gte: today }
     })
-    .populate('mentorId', 'firstName lastName domain image')
+    .populate('mentorId', 'firstName lastName domain image industry')
     .sort({ date: 1, startTime: 1 })
     .lean();
 

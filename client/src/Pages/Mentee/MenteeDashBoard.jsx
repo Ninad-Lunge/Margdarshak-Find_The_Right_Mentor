@@ -94,10 +94,9 @@ const MenteeDashBoard = () => {
   }, []);
 
   return (
-    <div className="menteeDashboard bg-gray-50">
+    <div className="menteeDashboard bg-gray-50 min-h-screen">
       <Navbar />
-      <h1 className="text-lg font-bold mt-4 mx-4">Hello, {menteeId || "Mentee"}</h1>
-      <h1 className="text-lg font-bold mt-4 mx-4">{menteeData ? `Hello, ${menteeData.firstName}` : "Hello, Mentee (Loading...)"}</h1>
+      <h1 className="text-lg font-semibold mt-4 mx-4">{menteeData ? `Hello, ${menteeData.firstName} !` : "Hello, Mentee (Loading...)"}</h1>
 
       <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
         {/* Left Section */}

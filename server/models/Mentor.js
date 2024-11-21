@@ -187,8 +187,7 @@ const MentorSchema = new mongoose.Schema({
             "Management Accounting",
             "Treasury",
             "Financial Reporting"
-          ],
-          
+          ], 
           "Research & Development": [
             "Product R&D",
             "Software R&D",

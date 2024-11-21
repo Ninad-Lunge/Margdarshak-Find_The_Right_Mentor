@@ -14,6 +14,7 @@ import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
+import Community from './Components/Mentor/Community.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -49,6 +50,7 @@ function App() {
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentee-register" element={<MenteeRegister />} />
         <Route path="/resume-builder" element={<ResumeBuilder />} />
+        
 
         {/* Protected Routes */}
         <Route
@@ -104,6 +106,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MentorProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-community"
+          element={
+            <ProtectedRoute>
+              <Community />
             </ProtectedRoute>
           }
         />

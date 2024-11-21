@@ -15,6 +15,7 @@ import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
 import Community from './Components/Mentor/Community.jsx';
+import JoinCommunity from './Components/Mentee/JoinCommunity.jsx';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -114,6 +115,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Community />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/join-community"
+          element={
+            <ProtectedRoute>
+              <JoinCommunity />
             </ProtectedRoute>
           }
         />

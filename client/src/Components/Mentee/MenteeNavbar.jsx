@@ -87,6 +87,13 @@ const Navbar = () => {
                 >
                     Profile
                 </Link>
+                <Link
+                    to="/join-community"
+                    className={`px-4 py-2 md:p-0 ${isActive('/join-community')}`}
+                >
+                    Community
+                </Link>
+                
                 {isLoggedIn && (
                     <button
                         onClick={handleLogout}

@@ -104,5 +104,34 @@ router.delete('/communities/:communityId/blogs/:blogId', verifyToken, async (req
   }
 });
 
+//Like blog
+router.post('/blogs/:id/like', verifyToken, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.likes += 1;
+    await blog.save();
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+//dislike blog 
+router.post('/blogs/:id/dislike', verifyToken, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.dislikes += 1;
+    await blog.save();
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+
   
 module.exports = router;

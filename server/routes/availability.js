@@ -105,13 +105,34 @@ router.get('/mentorslot', verifyToken, async (req, res) => {
   try {
     const mentorId = req.user.id;
 
-    const mentorSlots = await Availability.find({ mentorId, isBooked: false })
+    const mentorSlots = await Availability.find({ mentorId, status: 'available' })
       .populate('menteeId', 'firstName lastName')
       .lean();
 
     res.status(200).json(mentorSlots);
   } catch (error) {
     console.error('Error fetching mentor’s availability slots:', error);
+    res.status(500).json({ error: 'Failed to fetch availability slots' });
+  }
+});
+
+// Fetch mentor's available slots
+router.get('/mentorslot/:mentorId', verifyToken, async (req, res) => {
+  try {
+    const mentorId = req.params.mentorId;
+
+    const mentorSlots = await Availability.find({ 
+      mentorId, 
+      status: 'available',
+      // Only show future slots
+      date: { $gte: new Date() }
+    })
+    .sort({ date: 1, startTime: 1 }) // Sort by date and time
+    .lean();
+
+    res.status(200).json(mentorSlots);
+  } catch (error) {
+    console.error('Error fetching mentor\'s availability slots:', error);
     res.status(500).json({ error: 'Failed to fetch availability slots' });
   }
 });

@@ -17,13 +17,13 @@ const MentorSchema = new mongoose.Schema({
   whyMentor: { type: String, required: true },
 
   // for recommendation engine
-  industry: { type: String, required: true },         //new added
-  domain: { type: String, required: true },            //new added
-  subdomain: { type: String, required: true },        //new added
-  yearofexperience: { type: String, required: true },        //new added
-  positionofmentors: { type: String, required: true } ,       //new added
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentee' }], // Array of mentee IDs
-  followerCount: { type: Number, default: 0 } // Count of followers
+  industry: { type: String, required: true },
+  domain: { type: String, required: true },
+  subdomain: { type: String, required: true },
+  yearofexperience: { type: String, required: true },
+  positionofmentors: { type: String, required: true } ,
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentee' }],
+  followerCount: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Mentor', MentorSchema);

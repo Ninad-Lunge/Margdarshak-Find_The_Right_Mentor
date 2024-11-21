@@ -50,6 +50,14 @@ const menteeSchema = new mongoose.Schema({
     role: { 
         type: String, 
         default: 'Mentee',
+    },
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Mentor'
+    }],
+    followingCount: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

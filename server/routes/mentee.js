@@ -7,7 +7,8 @@ const {
     getMenteeById,
     updateMentee,
     deleteMentee,
-    menteeLogin
+    menteeLogin,
+    getFollowedMentors
 } = require('../controllers/menteeController');
 
 // CRUD routes
@@ -19,5 +20,6 @@ router.delete('/:id', verifyToken, deleteMentee);
 
 // Other routes
 router.post('/login', menteeLogin);
+router.get('/:menteeId/followed-mentors', getFollowedMentors);
 
 module.exports = router;

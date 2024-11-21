@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Navbar from './MentorNavbar';
 
 const MentorAvailability = () => {
   const [date, setDate] = useState('');

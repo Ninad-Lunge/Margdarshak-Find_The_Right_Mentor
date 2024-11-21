@@ -1,6 +1,7 @@
 const Mentor = require('../models/Mentor');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Mentee = require('../models/Mentee');
 
 // Create a mentor
 exports.createMentor = async (req, res) => {
@@ -95,16 +96,16 @@ exports.mentorLogin = async (req, res) => {
   }
 };
 
-
 exports.toggleFollowMentor = async (req, res) => {
   const { mentorId } = req.params;
   const menteeId = req.user?.id;
 
-  console.log('Mentor ID:', mentorId);
-  console.log('Mentee ID:', menteeId);
+  // console.log('Mentor ID:', mentorId);
+  // console.log('Mentee ID:', menteeId);
 
   try {
       const mentor = await Mentor.findById(mentorId);
+      const mentee = await Mentee.findById(menteeId);
       if (!mentor) {
           console.log('Mentor not found');
           return res.status(404).json({ success: false, message: 'Mentor not found' });
@@ -118,12 +119,20 @@ exports.toggleFollowMentor = async (req, res) => {
           { _id: mentorId },
           { $pull: { followers: menteeId }, $set: { followerCount: mentor.followers.length - 1 } }
         );
+        await Mentee.updateOne(
+          { _id: menteeId },
+          { $pull: { following: mentorId }, $set: { followingCount: mentee.following.length - 1 } }
+        );
         return res.status(200).json({ success: true, message: 'Unfollowed mentor successfully' });
       }
       await Mentor.updateOne(
         { _id: mentorId },
         { $push: { followers: menteeId }, $set: { followerCount: mentor.followers.length + 1 } }
       );
+      await Mentee.updateOne(
+        { _id: menteeId },
+        { $push: { following: mentorId }, $set: { followingCount: mentee.following.length + 1 } }
+      )
       res.status(200).json({ success: true, message: 'Followed mentor successfully' });
       
   } catch (error) {
@@ -150,4 +159,3 @@ exports.isFollowingMentor = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error checking follow status', error: error.message });
   }
 };
-

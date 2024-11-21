@@ -24,7 +24,6 @@ const MentorDashboard = () => {
 
   const mentorId = localStorage.getItem('mentorId');
 
-  // Fetch mentor data from API if not in localStorage
   useEffect(() => {
     if (!mentorData && mentorId) {
       fetch(`/api/mentor/${mentorId}`)
@@ -135,9 +134,51 @@ const MentorDashboard = () => {
             </div>
 
             {/* Stats Section */}
-            <div className="stats col-span-2 bg-white shadow rounded-lg">
-              <h2 className="text-center mt-2 font-semibold">Your Stats</h2>
-              {/* Add relevant stats here */}
+            <div className="stats col-span-2 bg-white shadow rounded-lg p-6">
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                <div className="text-center">
+                    <h3 className="text-2xl font-bold">{mentorData?.followerCount}</h3>
+                    <p className="text-gray-600">Followers</p>
+                </div>
+                <div className="text-center">
+                    <h3 className="text-2xl font-bold">52</h3>
+                    <p className="text-gray-600">Community Created</p>
+                </div>
+                <div className="text-center">
+                    <h3 className="text-2xl font-bold">5</h3>
+                    <p className="text-gray-600">Workshops</p>
+                </div>
+            </div>
+
+            <div className="mt-10">
+                <h2 className="text-lg font-semibold text-gray-800">Areas of Expertise:</h2>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-center">
+                    {/* Expertise Item 1 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        Web Development
+                    </li>
+                    {/* Expertise Item 2 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        Data Science
+                    </li>
+                    {/* Expertise Item 3 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        Machine Learning
+                    </li>
+                    {/* Expertise Item 4 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        App Development
+                    </li>
+                    {/* Expertise Item 5 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        Cloud Computing
+                    </li>
+                    {/* Expertise Item 6 */}
+                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
+                        Cybersecurity
+                    </li>
+                </ul>
+              </div>
             </div>
           </div>
 

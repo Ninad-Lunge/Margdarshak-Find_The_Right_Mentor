@@ -1,4 +1,5 @@
 const Mentee = require('../models/Mentee');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validateEmail } = require('../utils/validation');
@@ -141,5 +142,54 @@ exports.menteeLogin = async (req, res) => {
       res.status(200).json({ success: true, token, mentee });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error logging in', error: error.message });
+    }
+};
+
+// exports.getFollowedMentors = async (req, res) => {
+//     console.log('Mentee ID:', req.user);
+//     const menteeId = req.user.id;
+
+//     try {
+//         console.log('Searching for mentee:', menteeId);
+//         const mentee = await Mentee.findById(menteeId)
+//             .populate({
+//                 path: 'following',
+//                 select: 'firstName lastName image jobTitle industry skills followerCount'
+//             });
+        
+//         if (!mentee) {
+//             console.error('No mentee found with ID:', menteeId);
+//             return res.status(404).json({ success: false, message: 'Mentee not found' });
+//         }
+        
+//         res.status(200).json({ success: true, followedMentors: mentee.following });
+//     } catch (error) {
+//         console.error('Full error in getFollowedMentors:', error);
+//         res.status(500).json({ 
+//             success: false, 
+//             message: 'Error fetching followed mentors', 
+//             error: error.message 
+//         });
+//     }
+// };
+
+exports.getFollowedMentors = async (req, res) => {
+    try {
+        // const menteeId = req.user?.id;
+        const { menteeId } = req.params;
+
+        if (!menteeId || !mongoose.Types.ObjectId.isValid(menteeId)) {
+            return res.status(400).json({ success: false, message: 'Invalid or missing mentee ID' });
+        }
+
+        const mentee = await Mentee.findById(menteeId).populate('following');
+        if (!mentee) {
+            return res.status(404).json({ success: false, message: 'Mentee not found' });
+        }
+
+        res.json({ success: true, following: mentee.following });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error fetching mentee', error: error.message });
     }
 };

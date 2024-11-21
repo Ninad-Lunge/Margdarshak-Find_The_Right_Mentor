@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mentorpic from '../../Assets/mentorpic.png';
-
 import axios from 'axios';
 import Navbar from './MenteeNavbar';
 import { ToastContainer, toast, Slide } from 'react-toastify';
@@ -12,7 +11,6 @@ const MenteeBooking = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     fetchAvailableSlots();
@@ -45,7 +43,6 @@ const MenteeBooking = () => {
       });
 
       if (Array.isArray(response.data)) {
-        // Add some console logging for debugging
         console.log('Fetched slots:', response.data);
         setAvailableSlots(response.data);
 
@@ -192,7 +189,6 @@ const MenteeBooking = () => {
                   >
                     Book Slot
                   </button>
-
                 )}
               </div>
             ))

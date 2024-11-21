@@ -41,6 +41,8 @@ const MentorDashboard = () => {
     }
   }, [mentorData, mentorId]);
 
+
+
   const handleNavigation = () => {
     navigate('/add-slots');
   };
@@ -119,16 +121,16 @@ const MentorDashboard = () => {
             {/* Sidebar */}
             <div className="py-8 bg-white shadow rounded-lg">
               <img
-                src={mentorData.image || '../../Assets/logo.png'}
+                src={mentorData.image}
                 alt="Mentor Profile"
-                className="mentor-img border border-black rounded-full h-36 w-36 mx-auto mt-2"
-                onError={(e) => { e.target.src = '../../Assets/logo.png'; }}
+                className="border border-black rounded-full h-36 w-36 mx-auto mt-2"
+                // onError={(e) => { e.target.src = 'mentorData.image'; }}
               />
               <h1 className="mentor-name mt-8 mx-auto text-center">
                 {mentorData.firstName} {mentorData.lastName}
               </h1>
-              <p className="text-center text-gray-600">Industry: {mentorData.industrywork}</p>
-              <p className="text-center text-gray-600">Location: New York</p>
+              <p className="text-center text-gray-600">Industry: {mentorData.industry}</p>
+              <p className="text-center text-gray-600">Location: {mentorData.location}</p>
               <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block" onClick={handleEditProfile}>
                 Edit Profile
               </button>

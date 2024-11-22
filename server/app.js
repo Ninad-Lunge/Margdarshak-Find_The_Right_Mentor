@@ -16,7 +16,6 @@ const resumeRoutes = require('./routes/resume');
 const authRoutes = require('./routes/auth');
 const resumeParserRoutes = require('./routes/resumeParser');
 const communityRoutes = require('./routes/community');
-const authRoutes = require('./routes/auth');
 const blogsRoutes = require('./routes/blog');
 
 // Middleware
@@ -40,9 +39,7 @@ app.use('/api/auth', loginRoutes);
 app.use('/api', blogsRoutes);
 // app.use('/api', scheduleRoutes);
 
-const authRoutes = require('./routes/auth');
 app.use('/api', resumeRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/api/', resumeParserRoutes);
 app.get('/', (req, res) => {
     res.send('Welcome to the Server');

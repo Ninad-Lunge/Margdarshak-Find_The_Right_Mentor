@@ -13,7 +13,8 @@ const meetingRoutes = require('./routes/meetings');
 const loginRoutes = require('./routes/login');
 const slots = require('./routes/availability');
 const resumeRoutes = require('./routes/resume');
-const scheduleRoutes = require('./routes/scheduleMeet');
+const authRoutes = require('./routes/auth');
+const resumeParserRoutes = require('./routes/resumeParser');
 const communityRoutes = require('./routes/community');
 const authRoutes = require('./routes/auth');
 const blogsRoutes = require('./routes/blog');
@@ -37,9 +38,12 @@ app.use('/api/generate-resume', resumeRoutes);
 app.use('/api', communityRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api', blogsRoutes);
-// app.use('/api', scheduleRoutes); // Uncomment if you want to enable this route
+// app.use('/api', scheduleRoutes);
 
-// Welcome route
+const authRoutes = require('./routes/auth');
+app.use('/api', resumeRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/', resumeParserRoutes);
 app.get('/', (req, res) => {
     res.send('Welcome to the Server');
 });

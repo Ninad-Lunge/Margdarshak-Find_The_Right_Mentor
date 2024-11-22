@@ -1,104 +1,214 @@
-import Navbar from "../../Components/Mentee/MenteeNavbar"
-import { useState, useEffect } from "react";
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import Navbar from "../../Components/Mentee/MenteeNavbar";
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { FaEnvelope, FaLinkedin, FaSpinner } from "react-icons/fa";
 
 const MenteeDashBoard = () => {
-    const [upcomingSlots, setUpcomingSlots] = useState([]);
-    const [error, setError] = useState(null);
+  const [upcomingSlots, setUpcomingSlots] = useState([]);
+  const [followedMentors, setFollowedMentors] = useState([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(true);
+  const [isLoadingMentors, setIsLoadingMentors] = useState(true);
+  const [menteeData, setMenteeData] = useState();
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchUpcomingSlots();
-    }, []);
+  const menteeId = localStorage.getItem("menteeId");
 
-    const fetchUpcomingSlots = async () => {
-        setError(null);
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('No authentication token found. Please log in.');
-                return;
-            }
+  const fetchMenteeData = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/mentee/${menteeId}`);
+      setMenteeData(response.data.mentee);
+      console.log(response.data.mentee);
+    } catch (error) {
+      console.error("Error fetching mentee:", error.response || error);
+      setError(error.response?.data?.error || "Error fetching mentee");
+      toast.error("Failed to fetch mentee data.");
+    }
+  }, [menteeId]);
 
-            const response = await axios.get('/api/availability/confirmed', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+  useEffect(() => {
+    fetchMenteeData();
+  }, [fetchMenteeData]);
 
-            if (Array.isArray(response.data)) {
-                setUpcomingSlots(response.data);
-            } else {
-                console.error('Unexpected response format:', response.data);
-                setError('Invalid data format received from server');
-            }
-        } catch (error) {
-            console.error('Error details:', error.response || error);
-            const errorMessage = error.response?.data?.error || error.message || 'Failed to load available slots';
-            setError(errorMessage);
-            toast.error(errorMessage);
-        }
-    };
+  // Fetch Confirmed Slots
+  const fetchMenteeConfirmedSlots = async () => {
+    setError(null);
+    setIsLoadingSlots(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No authentication token found. Please log in.");
+        return;
+      }
 
-    return (
-        <div className="menteeDashoard bg-gray-50">
-            <Navbar />
+      const response = await axios.get("/api/availability/mentee/confirmed", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-            <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
-                <div className="flex flex-col col-span-2 gap-y-4">
-                    <div className="upcoming-meetings h-64 shadow rounded-md bg-white">
-                        <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+      setUpcomingSlots(response.data || []);
+    } catch (error) {
+      console.error("Error fetching slots:", error.response || error);
+      setError(error.response?.data?.error || "Failed to load confirmed slots");
+      toast.error("Failed to fetch slots");
+    } finally {
+      setIsLoadingSlots(false);
+    }
+  };
 
-                        {error && <p className="text-red-500">{error}</p>}
+  // Fetch Followed Mentors
+  const fetchFollowedMentors = async () => {
+    setIsLoadingMentors(true);
+    try {
+    //   const token = localStorage.getItem("token");
+      const menteeId = localStorage.getItem("menteeId");
+      const response = await axios.get(`/api/mentee/${menteeId}/followed-mentors`);
 
-                        <div className="flex space-y-2 m-4">
-                            {upcomingSlots.map((slot, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
-                                >
-                                    <div className="mb-2">
-                                        <h3 className="text-md font-medium">
-                                            Mentor: {slot.mentorId?.firstName || 'Not specified'}
-                                            {slot.mentorId?.lastName ? ` ${slot.mentorId.lastName}` : ''}
-                                        </h3>
-                                    </div>
+      setFollowedMentors(response.data.following || []);
+    } catch (error) {
+      console.error("Error fetching mentors:", error.response || error);
+      toast.error("Failed to fetch followed mentors");
+    } finally {
+      setIsLoadingMentors(false);
+    }
+  };
 
-                                    <div className="grid grid-cols-3">
-                                        <div className="space-y-1 text-gray-600 col-span-2">
-                                            <div className="flex items-center space-x-1 text-sm">
-                                                <span className="font-medium">Date:</span>
-                                                <span>{new Date(slot.date).toLocaleDateString()}</span>
-                                            </div>
-                                            <div className="flex items-center space-x-1 text-sm">
-                                                <span className="font-medium">Time:</span>
-                                                <span>{slot.startTime} - {slot.endTime}</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex">
-                                            <a
-                                                href={slot.meetLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-500 text-sm p-1 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white"
-                                            >
-                                                Join Meet
-                                            </a>
-                                        </div>
-                                    </div>
+  // Unfollow Mentor
+  const unFollowMentor = async (mentorId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`/api/mentor/${mentorId}/follow`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-                                </div>
-                            ))}
-                        </div>
+      setFollowedMentors(followedMentors.filter((mentor) => mentor._id !== mentorId));
+      toast.info("Unfollowed mentor successfully");
+    } catch (error) {
+      console.error("Error unfollowing mentor:", error);
+      toast.error("Failed to unfollow mentor");
+    }
+  };
+
+  useEffect(() => {
+    fetchMenteeConfirmedSlots();
+    fetchFollowedMentors();
+  }, []);
+
+  return (
+    <div className="menteeDashboard bg-gray-50 min-h-screen">
+      <Navbar />
+      <h1 className="text-lg font-semibold mt-4 mx-4">{menteeData ? `Hello, ${menteeData.firstName} !` : "Hello, Mentee (Loading...)"}</h1>
+
+      <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
+        {/* Left Section */}
+        <div className="col-span-2 space-y-4">
+          {/* Upcoming Meetings */}
+          <div className="upcoming-meetings shadow rounded-md bg-white p-4 h-full">
+            <h3 className="text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
+            {isLoadingSlots && (
+              <div className="flex justify-center items-center h-32">
+                <FaSpinner className="animate-spin text-gray-500 text-2xl" />
+              </div>
+            )}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {!isLoadingSlots && upcomingSlots.length === 0 && (
+              <p className="text-gray-500">No upcoming meetings scheduled</p>
+            )}
+            <div className="grid grid-cols-3 gap-2">
+              {upcomingSlots.map((slot) => (
+                <div
+                  key={slot._id}
+                  className="p-4 border rounded-lg shadow-sm hover:shadow-md"
+                >
+                  <h4 className="font-medium">
+                    Mentor: {slot.mentorId?.firstName || "N/A"} {slot.mentorId?.lastName || ""}
+                  </h4>
+                  <p>Date: {slot.formattedDate || "N/A"}</p>
+                  <p>Time: {slot.startTime} - {slot.endTime}</p>
+                  {slot.meetLink ? (
+                    <a
+                      href={slot.meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline"
+                    >
+                      Join Meeting
+                    </a>
+                  ) : (
+                    <p className="text-gray-500">No meeting link yet</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section: Followed Mentors */}
+        <div className="notifications col-span-1 shadow rounded-md bg-white p-4">
+          <h2 className="text-gray-800 font-medium mb-4">Followed Mentors</h2>
+          {isLoadingMentors && (
+            <div className="flex justify-center items-center">
+              <FaSpinner className="animate-spin text-blue-500 text-2xl" />
+              <p className="ml-2 text-gray-600">Loading mentors...</p>
+            </div>
+          )}
+          {!isLoadingMentors && followedMentors.length === 0 && (
+            <p className="text-gray-600">You are not following any mentors yet.</p>
+          )}
+          <div className="grid grid-cols-1 gap-4">
+            {!isLoadingMentors &&
+                followedMentors.map((mentor) => (
+                <div
+                    key={mentor._id}
+                    className="border rounded-lg p-6 shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
+                >
+                    <div className="flex items-center space-x-6">
+                    <img
+                        src={mentor.image || "/default-avatar.png"}
+                        alt={`${mentor.firstName} ${mentor.lastName}`}
+                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
+                    />
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-800">
+                        {mentor.firstName} {mentor.lastName}
+                        </h3>
+                        <p className="text-gray-600 text-base">{mentor.jobTitle}</p>
                     </div>
-                    <div className="recommendations col-span-3 h-72 shadow rounded-md bg-white">
-                        <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Recommendations</h3>
+                    </div>
+                    <div className="flex justify-between items-center mt-6">
+                    <div className="flex space-x-4 mx-2">
+                        <a 
+                        href={`mailto:${mentor.email}`} 
+                        className="text-black hover:text-gray-700 transition-colors"
+                        title="Email"
+                        >
+                        <FaEnvelope size={30} />
+                        </a>
+                        {mentor.linkedin && (
+                        <a 
+                            href={mentor.linkedin} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-black hover:text-gray-700 transition-colors"
+                            title="LinkedIn"
+                        >
+                            <FaLinkedin size={30} />
+                        </a>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => unFollowMentor(mentor._id)}
+                        className="text-red-500 border border-red-500 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
+                    >
+                        Unfollow
+                    </button>
                     </div>
                 </div>
-                <div className="notifications col-span-1 h-full shadow rounded-md bg-white">
-                    <h3 className="mt-4 ms-4 text-gray-800 font-medium mb-2">Notifications</h3>
-                </div>
+                ))}
             </div>
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
 
 export default MenteeDashBoard;

@@ -1,9 +1,34 @@
 const express = require('express');
+const cron = require('node-cron');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
 const Availability = require('../models/Availability');
 const { verifyToken } = require('../middleware/authMiddleware');
+
+// Automatically moves expired slots to pending status
+cron.schedule('0 * * * *', async () => { // Runs every hour
+  try {
+    const currentDate = new Date();
+    const result = await Availability.updateMany(
+      {
+        $or: [
+          { date: { $lt: currentDate } },
+          {
+            date: { $eq: currentDate },
+            endTime: { $lt: currentDate.toTimeString().split(' ')[0] },
+          },
+        ],
+        status: { $ne: 'pending' },
+      },
+      { $set: { status: 'pending' } }
+    );
+
+    console.log(`Expired slots updated: ${result.modifiedCount}`);
+  } catch (error) {
+    console.error('Error updating expired slots:', error);
+  }
+});
 
 // Add availability slot
 router.post(
@@ -37,7 +62,7 @@ router.post(
       
       // Populate mentor details before sending response
       const populatedSlot = await Availability.findById(newSlot._id)
-        .populate('mentorId', 'firstName lastName industrywork');
+        .populate('mentorId', 'firstName lastName industrywork image');
 
       res.status(201).json({
         success: true,
@@ -80,13 +105,34 @@ router.get('/mentorslot', verifyToken, async (req, res) => {
   try {
     const mentorId = req.user.id;
 
-    const mentorSlots = await Availability.find({ mentorId, isBooked: false })
+    const mentorSlots = await Availability.find({ mentorId, status: 'available' })
       .populate('menteeId', 'firstName lastName')
       .lean();
 
     res.status(200).json(mentorSlots);
   } catch (error) {
     console.error('Error fetching mentor’s availability slots:', error);
+    res.status(500).json({ error: 'Failed to fetch availability slots' });
+  }
+});
+
+// Fetch mentor's available slots
+router.get('/mentorslot/:mentorId', verifyToken, async (req, res) => {
+  try {
+    const mentorId = req.params.mentorId;
+
+    const mentorSlots = await Availability.find({ 
+      mentorId, 
+      status: 'available',
+      // Only show future slots
+      date: { $gte: new Date() }
+    })
+    .sort({ date: 1, startTime: 1 }) // Sort by date and time
+    .lean();
+
+    res.status(200).json(mentorSlots);
+  } catch (error) {
+    console.error('Error fetching mentor\'s availability slots:', error);
     res.status(500).json({ error: 'Failed to fetch availability slots' });
   }
 });
@@ -101,7 +147,7 @@ router.get('/mentor', verifyToken, async (req, res) => {
       status: 'available',
       date: { $gte: today }
     })
-    .populate('mentorId', 'firstName lastName industrywork')
+    .populate('mentorId', 'firstName lastName domain image industry')
     .sort({ date: 1, startTime: 1 })
     .lean();
 
@@ -175,10 +221,39 @@ router.get('/confirmed', verifyToken, async (req, res) => {
     const bookedSlots = await Availability.find({
       mentorId: req.user.id,
       status: 'confirmed'
-    }).populate('mentorId menteeId');
+    }).populate('mentorId menteeId')
+    .sort({ date: 1, startTime: 1 })
+    .lean();
     res.json(bookedSlots);
   } catch (error) {
     res.status(500).json({ message: 'Error fecthing confirmed slots', error: error.message });
+  }
+});
+
+router.get('/mentee/confirmed', verifyToken, async (req, res) => {
+  try {
+    const menteeId = req.user.id;
+
+    const confirmedSlots = await Availability.find({
+      menteeId: menteeId,
+      status: 'confirmed'
+    })
+    .populate('mentorId', 'firstName lastName industrywork')
+    .sort({ date: 1, startTime: 1 })
+    .lean();
+
+    const formattedSlots = confirmedSlots.map(slot => ({
+      ...slot,
+      formattedDate: new Date(slot.date).toLocaleDateString(),
+    }));
+
+    res.json(formattedSlots);
+  } catch (error) {
+    console.error('Error fetching mentee confirmed slots:', error);
+    res.status(500).json({ 
+      message: 'Error fetching confirmed slots', 
+      error: error.message 
+    });
   }
 });
 
@@ -209,20 +284,9 @@ router.put('/:id/status', verifyToken, async (req, res) => {
       slot.status = status;
       slot.meetLink = meetLink;
       await slot.save();
-
-      // You might want to notify the mentee here
-      // await notifyMentee(slot.menteeId, 'accepted', meetLink);
     } else if (status === 'rejected') {
-      // For rejected slots, you can either:
-      // Option 1: Delete the slot completely
       await Availability.findByIdAndDelete(id);
       
-      // Option 2: Update status to rejected and keep for record
-      // slot.status = 'rejected';
-      // await slot.save();
-
-      // You might want to notify the mentee here
-      // await notifyMentee(slot.menteeId, 'rejected');
     }
 
     res.json({ message: `Slot ${status} successfully` });
@@ -232,7 +296,22 @@ router.put('/:id/status', verifyToken, async (req, res) => {
   }
 });
 
-// Optional: Add a route to view slot history (if keeping rejected slots)
+router.delete('/delete-slot/:id', verifyToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleteSlot = await Availability.findByIdAndDelete(id);
+
+    if(!deleteSlot){
+      return res.status(404).json({ message: 'Slot not found' });
+    }
+    res.json({ message: 'Slot deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting slot', error });
+  }
+});
+
+// Add a route to view slot history (if keeping rejected slots)
 router.get('/history', verifyToken, async (req, res) => {
   try {
     const slots = await Availability.find({

@@ -34,28 +34,34 @@ const MentorAvailability = () => {
         return;
       }
   
-      if (new Date(date) < new Date().setHours(0, 0, 0, 0)) {
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      if (selectedDate < today) {
         toast.error('Cannot add slots for past dates');
         return;
+      }
+  
+      // Check time for today's date
+      if (selectedDate.getTime() === today.getTime()) {
+        const currentTime = new Date().toISOString().slice(11, 16); // Current time in HH:MM
+        if (startTime < currentTime) {
+          toast.error('Start time must be later than the current time');
+          return;
+        }
       }
   
       const token = localStorage.getItem('token');
       const response = await axios.post(
         '/api/availability/add',
-        { 
-          date,  // Send the date directly
-          startTime, 
-          endTime,
-          status: 'available' // Explicitly set status
-        },
+        { date, startTime, endTime, status: 'available' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+  
       if (response.data.success) {
         setAvailabilityList([...availabilityList, response.data.data]);
         toast.success('New Availability Added Successfully!');
-        
-        // Clear form
         setDate('');
         setStartTime('');
         setEndTime('');
@@ -64,7 +70,7 @@ const MentorAvailability = () => {
       console.error('Add availability error:', error.response || error);
       toast.error(error.response?.data?.error || 'Failed to add availability');
     }
-  };
+  };  
 
   const handleDelete = async (id) => {
     try {
@@ -108,26 +114,37 @@ const MentorAvailability = () => {
         toast.error('Please fill in all fields');
         return;
       }
-
-      if (!editingSlot?._id) {
-        toast.error('Invalid slot data');
+  
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      if (selectedDate < today) {
+        toast.error('Cannot set slots for past dates');
         return;
       }
-
-      const formattedDate = new Date(date).toISOString().slice(0, 10);
+  
+      // Check time for today's date
+      if (selectedDate.getTime() === today.getTime()) {
+        const currentTime = new Date().toISOString().slice(11, 16); // Current time in HH:MM
+        if (startTime < currentTime) {
+          toast.error('Start time must be later than the current time');
+          return;
+        }
+      }
   
       const token = localStorage.getItem('token');
       const response = await axios.put(
         `/api/availability/${editingSlot._id}`,
-        { date: formattedDate, startTime, endTime },
+        { date, startTime, endTime },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+  
       const updatedSlot = response.data;
       setAvailabilityList(availabilityList.map(slot =>
         slot._id === updatedSlot._id ? updatedSlot : slot
       ));
       toast.success('Availability Edited Successfully!');
-  
       setEditingSlot(null);
       setDate('');
       setStartTime('');
@@ -135,7 +152,7 @@ const MentorAvailability = () => {
     } catch (error) {
       toast.error('Failed to update slot');
     }
-  };
+  };  
 
   const formatDate = (dateString) => {
     try {

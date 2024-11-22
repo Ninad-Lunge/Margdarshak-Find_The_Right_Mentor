@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Navbar from "../../Components/Mentee/MenteeNavbar"
+
 
 const ResumeBuilder = () => {
   const [formData, setFormData] = useState({
@@ -143,6 +145,8 @@ const ResumeBuilder = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6">
       {/* Personal Information Section */}
       <section className="mb-8">
@@ -664,6 +668,7 @@ const ResumeBuilder = () => {
         Generate Resume
       </button>
     </form>
+    </>
   );
 };
 

@@ -27,6 +27,4 @@ router.post('/login', mentorLogin); // Mentor login
 router.get('/:mentorId/is-following', verifyToken, isFollowingMentor); // Check if mentee is following a mentor
 router.post('/:mentorId/follow', verifyToken, toggleFollowMentor); // Follow or unfollow a mentor
 
-
-
 module.exports = router;

@@ -14,6 +14,7 @@ import MentorRequests from './Components/Mentor/Request.jsx';
 import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
+
 import Community from './Components/Mentor/Community.jsx';
 import JoinCommunity from './Components/Mentee/JoinCommunity.jsx';
 
@@ -45,13 +46,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to={initialPath} />} />
+        <Route exact path="/" element={<Navigate to={initialPath} />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentee-register" element={<MenteeRegister />} />
-        <Route path="/resume-builder" element={<ResumeBuilder />} />
-        
+        <Route path="/resume-builder" element={<ResumeBuilder />}/>
 
         {/* Protected Routes */}
         <Route

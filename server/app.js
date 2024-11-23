@@ -16,6 +16,7 @@ const resumeRoutes = require('./routes/resume');
 const resumeParserRoutes = require('./routes/resumeParser');
 const communityRoutes = require('./routes/community');
 const blogsRoutes = require('./routes/blog');
+const authRoutes = require('./routes/auth'); 
 
 // Middleware
 app.use(cors());
@@ -40,6 +41,7 @@ app.use('/api', blogsRoutes);
 
 app.use('/api', resumeRoutes);
 app.use('/api/', resumeParserRoutes);
+
 app.get('/', (req, res) => {
     res.send('Welcome to the Server');
 });

@@ -135,9 +135,16 @@ const MenteeDashBoard = () => {
   return (
     <div className="menteeDashboard bg-gray-50 min-h-screen">
       <Navbar />
-      <h1 className="text-lg font-semibold mt-4 mx-4">{menteeData ? `Hello, ${menteeData.firstName} !` : "Hello, Mentee (Loading...)"}</h1>
-
-      <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
+      <h1 className="text-lg flex gap-2 justify-center items-center font-semibold mt-4 mx-4">
+        {menteeData ? (
+          <>
+            Hello,  <span className="text-blue-500"> {menteeData.firstName}!</span>
+          </>
+        ) : (
+          "Hello, Mentee (Loading...)"
+        )}
+      </h1>
+      <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-2">
         {/* Left Section */}
         <div className="col-span-2 space-y-2">
           {/* Upcoming Meetings */}
@@ -215,7 +222,7 @@ const MenteeDashBoard = () => {
                         </h4>
                         <button
                           onClick={() => handleChange(mentor._id)}
-                          className="text-indigo-600 border border-indigo-500 px-3 py-1 text-sm rounded-md hover:bg-indigo-500 hover:text-white transition-colors"
+                          className="text-indigo-600 border border-indigo-500 px-2 py-1 text-sm rounded-md hover:bg-indigo-50 transition-colors"
                         >
                           View Profile
                         </button>
@@ -253,78 +260,80 @@ const MenteeDashBoard = () => {
 
         </div>
 
-{/* Right Section: Followed Mentors */}
-<div className="notifications col-span-1 shadow-lg rounded-md bg-white p-6">
-  <h2 className="text-gray-800 font-bold text-xl mb-4 border-b pb-2 border-gray-200">
-    Followed Mentors
-  </h2>
+        {/* Right Section: Followed Mentors */}
+        <div className="notifications col-span-1 shadow-lg rounded-md bg-gradient-to-r from-purple-500 to-indigo-400  p-4">
+          <h2 className="text-white font-bold text-xl mb-4 border-b-2 pb-2 border-blue-300">
+            Followed Mentors
+          </h2>
 
-  {isLoadingMentors ? (
-    <div className="flex justify-center items-center">
-      <FaSpinner className="animate-spin text-blue-500 text-2xl" />
-      <p className="ml-2 text-gray-600">Loading mentors...</p>
-    </div>
-  ) : followedMentors.length === 0 ? (
-    <p className="text-gray-600 text-center mt-4">
-      No mentors available based on your profile.
-    </p>
-  ) : (
-    <div className="grid grid-cols-1 gap-4 max-h-[calc(90vh-150px)] overflow-y-auto">
-      {followedMentors.map((mentor) => (
-        <div
-          key={mentor._id}
-          className="rounded-lg p-5 shadow-md bg-gradient-to-r from-blue-50 to-white hover:shadow-lg transition-all duration-300"
-        >
-          <div className="flex items-center justify-between">
-            {/* Mentor Image and Details */}
-            <div className="flex items-center space-x-4">
-              <img
-                src={mentor.image || "/default-avatar.png"}
-                onClick={() => handleChange(mentor._id)}
-                alt={`${mentor.firstName} ${mentor.lastName}`}
-                className="w-20 h-20 cursor-pointer rounded-full object-cover border-4 border-blue-200 shadow-md hover:scale-105 transition-transform"
-              />
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors cursor-pointer">
-                  {mentor.firstName} {mentor.lastName}
-                </h3>
-                <p className="text-sm text-gray-600 font-medium">{mentor.jobTitle}</p>
-                <div className="flex space-x-3 mt-2">
-                  <a
-                    href={`mailto:${mentor.email}`}
-                    className="text-blue-600 hover:text-blue-400 transition-colors"
-                    title="Email"
-                  >
-                    <FaEnvelope size={20} />
-                  </a>
-                  {mentor.linkedin && (
-                    <a
-                      href={mentor.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-400 transition-colors"
-                      title="LinkedIn"
-                    >
-                      <FaLinkedin size={20} />
-                    </a>
-                  )}
-                </div>
-              </div>
+
+          {isLoadingMentors ? (
+            <div className="flex justify-center items-center">
+              <FaSpinner className="animate-spin text-blue-500 text-2xl" />
+              <p className="ml-2 text-gray-600">Loading mentors...</p>
             </div>
+          ) : followedMentors.length === 0 ? (
+            <p className="text-gray-600 text-center mt-4">
+              You haven’t followed any mentors yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 max-h-[calc(90vh-150px)] overflow-y-auto">
+              {followedMentors.map((mentor) => (
+                <div
+                  key={mentor._id}
+                  className="rounded-lg p-5 shadow-md bg-gradient-to-r from-blue-50 to-white hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    {/* Mentor Image and Details */}
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={mentor.image || "/default-avatar.png"}
+                        onClick={() => handleChange(mentor._id)}
+                        alt={`${mentor.firstName} ${mentor.lastName}`}
+                        className="w-20 h-20 cursor-pointer rounded-full object-cover border-4 border-blue-200 shadow-md hover:scale-105 transition-transform"
+                      />
+                      <div>
+                        <h3 onClick={() => handleChange(mentor._id)} className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors cursor-pointer">
+                          {mentor.firstName} {mentor.lastName}
 
-            {/* Unfollow Button */}
-            <button
-              onClick={() => unFollowMentor(mentor._id)}
-              className="text-white bg-red-500 px-3 py-1 text-sm font-medium rounded-md hover:bg-red-600 transition-colors"
-            >
-              Unfollow
-            </button>
-          </div>
+                        </h3>
+                        <p className="text-sm text-gray-600 font-medium">{mentor.jobTitle}</p>
+                        <div className="flex space-x-3 mt-2">
+                          <a
+                            href={`mailto:${mentor.email}`}
+                            className="text-blue-600 hover:text-blue-400 transition-colors"
+                            title="Email"
+                          >
+                            <FaEnvelope size={20} />
+                          </a>
+                          {mentor.linkedin && (
+                            <a
+                              href={mentor.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-400 transition-colors"
+                              title="LinkedIn"
+                            >
+                              <FaLinkedin size={20} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Unfollow Button */}
+                    <button
+                      onClick={() => unFollowMentor(mentor._id)}
+                      className="text-red-500 border border-red-500 px-3 py-1 text-sm font-medium rounded-md hover:bg-red-50 transition-colors"
+                    >
+                      Unfollow
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      ))}
-    </div>
-  )}
-</div>
 
 
       </div>

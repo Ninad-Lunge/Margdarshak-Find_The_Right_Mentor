@@ -20,8 +20,6 @@ const MenteeBooking = () => {
     if (slot) {
       localStorage.setItem('mentorId', slot.mentorId._id);
       console.log(slot.mentorId._id);
-
-
       navigate('/mentorprofilebymentee');
     } else {
       console.error('Slot or mentorId is undefined');

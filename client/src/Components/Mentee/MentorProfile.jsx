@@ -164,7 +164,7 @@ const MentorProfile = () => {
                     <img
                         src={mentorData?.image}
                         alt="Mentor Profile"
-                        className="mentor-img border border-gray-300 rounded-full h-32 w-32 mx-auto"
+                        className="mentor-img border-4 border-blue-300 rounded-full h-32 w-32 mx-auto"
                     />
                     <h1 className="mentor-name mt-4 text-xl font-bold text-center">
                         {mentorData?.firstName} {mentorData?.lastName}

@@ -30,7 +30,7 @@ const MentorRequests = () => {
 
       window.addEventListener('message', async (event) => {
         if (event.origin !== 'http://localhost:5000') return;
-        
+
         if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
           authWindow.close();
           localStorage.setItem('google_access_token', event.data.token);
@@ -74,13 +74,13 @@ const MentorRequests = () => {
     const token = localStorage.getItem('token');
     const updateData = { status };
     if (meetLink) updateData.meetLink = meetLink;
-    
+
     await axios.put(
       `http://localhost:5000/api/availability/${slotId}/status`,
       updateData,
-      { headers: { Authorization: `Bearer ${token}` }}
+      { headers: { Authorization: `Bearer ${token}` } }
     );
-    
+
     // Remove the slot from local state
     setBookedSlots(prev => prev.filter(slot => slot._id !== slotId));
   };
@@ -89,7 +89,7 @@ const MentorRequests = () => {
     try {
       setError(null);
       setIsProcessing(true);
-      
+
       const token = localStorage.getItem('google_access_token');
       if (!token) {
         localStorage.setItem('pending_slot', JSON.stringify(slot));
@@ -114,7 +114,7 @@ const MentorRequests = () => {
         'http://localhost:5000/api/auth/schedule-meet',
         meetingData,
         {
-          headers: { 
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
@@ -180,7 +180,7 @@ const MentorRequests = () => {
         <h2 className="text-2xl font-semibold text-center mb-4 text-[#3B50D5]">
           Mentee's Request
         </h2>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative">
             <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
@@ -193,8 +193,8 @@ const MentorRequests = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {bookedSlots.length > 0 ? (
             bookedSlots.map((slot) => (
-              <div 
-                key={slot._id} 
+              <div
+                key={slot._id}
                 className="bg-white p-4 rounded space-y-4 transition-all duration-300 hover:shadow-md border border-gray-300"
               >
                 <p><strong>Date: </strong> {new Date(slot.date).toLocaleDateString()}</p>
@@ -202,34 +202,36 @@ const MentorRequests = () => {
 
                 <div>
                   <p>
-                    <strong>Mentee Name: </strong> 
+                    <strong>Mentee Name: </strong>
                     <span className='text-gray-600'>{slot.menteeId?.firstName || 'Not Specified'}</span>
                   </p>
                   <p>
-                    <strong>Mentee Expertise: </strong> 
-                    <span className='text-gray-600'>{slot.menteeId?.expertise || 'Not specified'}</span>
-                  </p>
+                    <strong>Mentee Expertise: </strong>
+                    <span className="text-gray-600">
+                      {slot.menteeId?.skills?.length > 0
+                        ? `${slot.menteeId.skills.slice(0, 5).join(', ')}${slot.menteeId.skills.length > 5 ? ', ...' : ''
+                        }`
+                        : 'Not specified'}
+                    </span>                 </p>
                 </div>
 
                 <div className="flex justify-end space-x-2">
                   <button
-                    className={`px-4 py-2 rounded transition-colors duration-200 ${
-                      isProcessing || isAuthenticating
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    }`}
+                    className={`px-4 py-2 rounded transition-colors duration-200 ${isProcessing || isAuthenticating
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      }`}
                     onClick={() => acceptRequest(slot)}
                     disabled={isProcessing || isAuthenticating}
                   >
-                    {isAuthenticating ? 'Authenticating...' : 
-                     isProcessing ? 'Processing...' : 'Accept'}
+                    {isAuthenticating ? 'Authenticating...' :
+                      isProcessing ? 'Processing...' : 'Accept'}
                   </button>
-                  <button 
-                    className={`px-4 py-2 rounded transition-colors duration-200 ${
-                      isProcessing
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
+                  <button
+                    className={`px-4 py-2 rounded transition-colors duration-200 ${isProcessing
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-red-500 hover:bg-red-600 text-white'
+                      }`}
                     onClick={() => rejectRequest(slot)}
                     disabled={isProcessing}
                   >

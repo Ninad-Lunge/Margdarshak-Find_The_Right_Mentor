@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import Navbar from '../../Components/Mentor/MentorNavbar';
-import 'react-time-picker/dist/TimePicker.css';
+import FollowersModal from '../../Components/Mentor/FollowersModal';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,15 +10,15 @@ import 'react-toastify/dist/ReactToastify.css';
 const MentorDashboard = () => {
   const [confirmedSlots, setConfirmedSlots] = useState([]);
   const [error, setError] = useState(null);
+  const [showFollowers, setShowFollowers] = useState(false);
   const navigate = useNavigate();
 
   const [mentorData, setMentorData] = useState(() => {
     try {
       const savedData = localStorage.getItem('mentorData');
-      console.log("Mentor data from localStorage:", savedData);
       return savedData ? JSON.parse(savedData) : null;
     } catch (error) {
-      console.error("Error parsing mentor data from localStorage:", error);
+      console.error("Error parsing mentor data:", error);
       return null;
     }
   });
@@ -32,34 +33,18 @@ const MentorDashboard = () => {
           if (data.success) {
             setMentorData(data.mentor);
             localStorage.setItem('mentorData', JSON.stringify(data.mentor));
-          } else {
-            console.error("Failed to fetch mentor data");
           }
         })
-        .catch(error => console.error("Error fetching mentor data from API:", error));
+        .catch(error => console.error("Error fetching mentor data:", error));
     }
+    fetchConfirmedSlots();
   }, [mentorData, mentorId]);
 
-
-
-  const handleNavigation = () => {
-    navigate('/add-slots');
-  };
-
-  const handleEditProfile = () => {
-    navigate('/mentor-profile');
-  };
-
-  useEffect(() => {
-    fetchConfirmedSlots();
-  }, []);
-
   const fetchConfirmedSlots = async () => {
-    setError(null);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        setError('No authentication token found. Please log in.');
+        setError('No authentication token found');
         return;
       }
 
@@ -69,13 +54,9 @@ const MentorDashboard = () => {
 
       if (Array.isArray(response.data)) {
         setConfirmedSlots(response.data);
-      } else {
-        console.error('Unexpected response format:', response.data);
-        setError('Invalid data format received from server');
       }
     } catch (error) {
-      console.error('Error details:', error.response || error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to load available slots';
+      const errorMessage = error.response?.data?.error || 'Failed to load slots';
       setError(errorMessage);
       toast.error(errorMessage);
     }
@@ -85,7 +66,7 @@ const MentorDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        setError('No authentication token found. Please log in.');
+        setError('No authentication token found');
         return;
       }
   
@@ -96,178 +77,179 @@ const MentorDashboard = () => {
       if (response.status === 200) {
         toast.success('Slot deleted successfully');
         fetchConfirmedSlots();
-      } else {
-        toast.error('Failed to delete slot');
       }
     } catch (error) {
-      console.error('Error deleting slot:', error.response || error);
-      setError('Error Deleting Slot');
+      toast.error('Error deleting slot');
     }
-  };  
+  };
+
+  const handleClick = () => {
+    navigate('/create-community');
+  }
 
   if (!mentorData) {
-    return <div>Loading mentor data...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="mentor min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       <ToastContainer />
-      <div className="grid grid-cols-1 lg:grid-cols-4 mt-3 mx-6 gap-4">
-
-        <div className="col-span-3">
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            {/* Sidebar */}
-            <div className="py-8 bg-white shadow rounded-lg">
-              <img
-                src={mentorData.image}
-                alt="Mentor Profile"
-                className="border border-black rounded-full h-36 w-36 mx-auto mt-2"
-                // onError={(e) => { e.target.src = 'mentorData.image'; }}
-              />
-              <h1 className="mentor-name mt-8 mx-auto text-center">
-                {mentorData.firstName} {mentorData.lastName}
-              </h1>
-              <p className="text-center text-gray-600">Industry: {mentorData.industry}</p>
-              <p className="text-center text-gray-600">Location: {mentorData.location}</p>
-              <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block" onClick={handleEditProfile}>
-                Edit Profile
-              </button>
-            </div>
-
-            {/* Stats Section */}
-            <div className="stats col-span-2 bg-white shadow rounded-lg p-6">
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                <div className="text-center">
-                    <h3 className="text-2xl font-bold">{mentorData?.followerCount}</h3>
-                    <p className="text-gray-600">Followers</p>
+      
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Profile and Stats Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Profile Card */}
+              <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+                <div className="relative w-32 h-32 mx-auto">
+                  <img
+                    src={mentorData.image}
+                    alt={`${mentorData.firstName} ${mentorData.lastName}`}
+                    className="rounded-full w-full h-full object-cover border-4 border-gray-50 shadow-md"
+                  />
                 </div>
-                <div className="text-center">
-                    <h3 className="text-2xl font-bold">52</h3>
-                    <p className="text-gray-600">Community Created</p>
-                </div>
-                <div className="text-center">
-                    <h3 className="text-2xl font-bold">5</h3>
-                    <p className="text-gray-600">Workshops</p>
-                </div>
-            </div>
-
-            <div className="mt-10">
-                <h2 className="text-lg font-semibold text-gray-800">Areas of Expertise:</h2>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-center">
-                    {/* Expertise Item 1 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        Web Development
-                    </li>
-                    {/* Expertise Item 2 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        Data Science
-                    </li>
-                    {/* Expertise Item 3 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        Machine Learning
-                    </li>
-                    {/* Expertise Item 4 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        App Development
-                    </li>
-                    {/* Expertise Item 5 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        Cloud Computing
-                    </li>
-                    {/* Expertise Item 6 */}
-                    <li className="bg-green-100 text-green-700 p-3 text-sm rounded-lg shadow-sm hover:shadow-md hover:bg-green-200 transition duration-300">
-                        Cybersecurity
-                    </li>
-                </ul>
+                <h2 className="mt-4 text-xl font-semibold">
+                  {mentorData.firstName} {mentorData.lastName}
+                </h2>
+                <p className="text-gray-600 mt-1">{mentorData.industry}</p>
+                <p className="text-gray-600">{mentorData.location}</p>
+                <button 
+                  onClick={() => navigate('/mentor-profile')}
+                  className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Edit Profile
+                </button>
               </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* Community Section */}
-            <div className="community bg-white shadow rounded-lg h-60 flex flex-col">
-              <h2 className="text-center mt-2 font-bold">Community</h2>
-              <button
-                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
-              >
-                Create a new Community
-              </button>
-            </div>
-
-            {/* Workshops Section */}
-            <div className="workshops bg-white shadow rounded-lg h-60 flex flex-col">
-              <h2 className="text-center mt-2 font-bold">Workshops</h2>
-              <button
-                className="add-slots border border-black px-4 py-2 mt-4 rounded-md hover:shadow-xl hover:-translate-x-1 hover:-translate-y-1 mx-auto"
-              >
-                Conduct Workshop
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Meetings Section */}
-        <div className="col-span-1 bg-white shadow rounded-lg p-4">
-          <h2 className="text-center font-semiold">Meetings</h2>
-          <button
-            onClick={handleNavigation}
-            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
-          >
-            Add Availability
-          </button>
-          <h3 className="mt-2 text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
-
-          {error && <p className="text-red-500">{error}</p>}
-
-          <div className="space-y-2">
-            {confirmedSlots.map((slot, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
-              >
-                <div className="mb-2 grid grid-cols-3">
-                  <h3 className="text-md font-medium col-span-2">
-                    Mentee: {slot.menteeId?.firstName || 'Not specified'}
-                    {slot.menteeId?.lastName ? ` ${slot.menteeId.lastName}` : ''}
-                  </h3>
+              {/* Stats Card */}
+              <div className="md:col-span-2 bg-white rounded-xl shadow-sm p-6">
+                <div className="grid grid-cols-3 gap-4">
                   <button 
-                    className='px-1 py-1 border border-green-500 rounded-md hover:bg-green-500 hover:text-white'
-                    onClick={() => handleDelete(slot._id) }
+                    onClick={() => setShowFollowers(true)}
+                    className="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    Done
+                    <p className="text-2xl font-bold text-blue-600">
+                      {mentorData?.followerCount || 0}
+                    </p>
+                    <p className="text-gray-600">Followers</p>
                   </button>
+                  <div className="text-center p-4">
+                    <p className="text-2xl font-bold text-blue-600">52</p>
+                    <p className="text-gray-600">Communities</p>
+                  </div>
+                  <div className="text-center p-4">
+                    <p className="text-2xl font-bold text-blue-600">5</p>
+                    <p className="text-gray-600">Workshops</p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-3">
-                  <div className="space-y-1 text-gray-600 col-span-2">
-                    <div className="flex items-center space-x-1 text-sm">
-                      <span className="font-medium">Date:</span>
-                      <span>{new Date(slot.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center space-x-1 text-sm">
-                      <span className="font-medium">Time:</span>
-                      <span>{slot.startTime} - {slot.endTime}</span>
-                    </div>
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold mb-4">Expertise</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['Web Development', 'Data Science', 'Machine Learning', 
+                      'App Development', 'Cloud Computing', 'Cybersecurity'].map((skill) => (
+                      <span
+                        key={skill}
+                        className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                   </div>
-                  <div className="flex">
-                    <a
-                      href={slot.meetLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 text-sm px-2 py-2 border border-blue-500 rounded-md my-auto hover:bg-blue-500 hover:text-white w-full text-center"
-                    >
-                      Join Meet
-                    </a>
-                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold mb-1">Bio</h3>
+                  {mentorData.bio}
                 </div>
 
               </div>
-            ))}
+            </div>
+
+            {/* Community and Workshops Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">Community</h3>
+                <p className="text-gray-600 mb-4">Create and manage your learning communities</p>
+                <button 
+                  className="w-full px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                  onClick={handleClick}
+                >
+                  Create New Community
+                </button>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">Workshops</h3>
+                <p className="text-gray-600 mb-4">Schedule and conduct interactive workshops</p>
+                <button className="w-full px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                  Conduct Workshop
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Meetings */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold">Meetings</h3>
+              <button
+                onClick={() => navigate('/manage-slots')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Add Slots
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {confirmedSlots.map((slot, index) => (
+                <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-medium">
+                        {slot.menteeId?.firstName} {slot.menteeId?.lastName}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {new Date(slot.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {slot.startTime} - {slot.endTime}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => handleDelete(slot._id)}
+                      className="text-green-600 hover:bg-green-50 px-3 py-1 rounded-md text-sm"
+                    >
+                      Complete
+                    </button>
+                  </div>
+                  <a
+                    href={slot.meetLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+                  >
+                    Join Meeting
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
       </div>
+
+      <FollowersModal 
+        isOpen={showFollowers} 
+        onClose={() => setShowFollowers(false)} 
+        mentorId={mentorId} 
+      />
     </div>
   );
 };

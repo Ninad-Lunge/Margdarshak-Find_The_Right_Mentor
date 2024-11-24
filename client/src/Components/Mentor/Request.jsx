@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../../Components/Mentor/MentorNavbar';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CalendarDays, Clock, UserCircle, Briefcase, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import Navbar from './MentorNavbar';
 
 const MentorRequests = () => {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchBookedSlots();
@@ -53,6 +55,7 @@ const MentorRequests = () => {
   const fetchBookedSlots = async () => {
     try {
       setError(null);
+      setIsLoading(true);
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found, please log in.');
@@ -66,7 +69,8 @@ const MentorRequests = () => {
     } catch (err) {
       setError(err.message);
       toast.error('Failed to load booked slots');
-      console.error('Error fetching booked slots:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,7 +85,6 @@ const MentorRequests = () => {
       { headers: { Authorization: `Bearer ${token}` }}
     );
     
-    // Remove the slot from local state
     setBookedSlots(prev => prev.filter(slot => slot._id !== slotId));
   };
 
@@ -162,90 +165,122 @@ const MentorRequests = () => {
     }
   };
 
-  return (
-    <>
-      <Navbar />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        transition={Slide}
-        className="mt-14"
-      />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2 text-blue-600">
+          <Loader2 className="animate-spin" />
+          <span className="text-lg">Loading requests...</span>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="container mx-auto px-10 mt-4">
-        <h2 className="text-2xl font-semibold text-center mb-4 text-[#3B50D5]">
-          Mentee's Request
-        </h2>
-        
+  return (
+    <div className="min-h-screen bg-gray-50 pb-12">
+      <Navbar />
+      <ToastContainer position="top-right" autoClose={3000} transition={Slide} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Mentee Requests</h1>
+          <p className="mt-2 text-gray-600">Manage your pending mentorship session requests</p>
+        </div>
+
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative">
-            <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-              <button onClick={() => setError(null)}>×</button>
-            </span>
-            {error}
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-800">{error}</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookedSlots.length > 0 ? (
-            bookedSlots.map((slot) => (
-              <div 
-                key={slot._id} 
-                className="bg-white p-4 rounded space-y-4 transition-all duration-300 hover:shadow-md border border-gray-300"
-              >
-                <p><strong>Date: </strong> {new Date(slot.date).toLocaleDateString()}</p>
-                <p><strong>Time: </strong> {formatTime(slot.startTime)} - {formatTime(slot.endTime)}</p>
+        {bookedSlots.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm text-center py-12">
+            <div className="flex flex-col items-center space-y-4">
+              <CalendarDays className="h-12 w-12 text-gray-400" />
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium text-gray-900">No Pending Requests</h3>
+                <p className="text-gray-500">You don't have any pending mentorship requests at the moment.</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {bookedSlots.map((slot) => (
+              <div key={slot._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {/* Date and Time Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3 text-gray-600">
+                        <CalendarDays className="h-5 w-5" />
+                        <span>{new Date(slot.date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}</span>
+                      </div>
+                      <div className="flex items-center space-x-3 text-gray-600">
+                        <Clock className="h-5 w-5" />
+                        <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
+                      </div>
+                    </div>
 
-                <div>
-                  <p>
-                    <strong>Mentee Name: </strong> 
-                    <span className='text-gray-600'>{slot.menteeId?.firstName || 'Not Specified'}</span>
-                  </p>
-                  <p>
-                    <strong>Mentee Expertise: </strong> 
-                    <span className='text-gray-600'>{slot.menteeId?.expertise || 'Not specified'}</span>
-                  </p>
-                </div>
+                    {/* Mentee Details Section */}
+                    <div className="space-y-3 border-t pt-4">
+                      <div className="flex items-center space-x-3">
+                        <UserCircle className="h-5 w-5 text-blue-500" />
+                        <span className="font-medium">{slot.menteeId?.firstName || 'Not Specified'}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Briefcase className="h-5 w-5 text-blue-500" />
+                        <span>{slot.menteeId?.expertise || 'Not specified'}</span>
+                      </div>
+                    </div>
 
-                <div className="flex justify-end space-x-2">
-                  <button
-                    className={`px-4 py-2 rounded transition-colors duration-200 ${
-                      isProcessing || isAuthenticating
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    }`}
-                    onClick={() => acceptRequest(slot)}
-                    disabled={isProcessing || isAuthenticating}
-                  >
-                    {isAuthenticating ? 'Authenticating...' : 
-                     isProcessing ? 'Processing...' : 'Accept'}
-                  </button>
-                  <button 
-                    className={`px-4 py-2 rounded transition-colors duration-200 ${
-                      isProcessing
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
-                    onClick={() => rejectRequest(slot)}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? 'Processing...' : 'Reject'}
-                  </button>
+                    {/* Action Buttons */}
+                    <div className="flex space-x-3 pt-4 border-t">
+                      <button
+                        onClick={() => acceptRequest(slot)}
+                        disabled={isProcessing || isAuthenticating}
+                        className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-white transition-colors duration-200 
+                          ${isProcessing || isAuthenticating ? 
+                            'bg-gray-400 cursor-not-allowed' : 
+                            'bg-green-500 hover:bg-green-600'}`}
+                      >
+                        {isAuthenticating || isProcessing ? (
+                          <Loader2 className="animate-spin h-5 w-5" />
+                        ) : (
+                          <CheckCircle className="h-5 w-5" />
+                        )}
+                        <span>{isAuthenticating ? 'Authenticating' : 
+                               isProcessing ? 'Processing' : 'Accept'}</span>
+                      </button>
+                      
+                      <button
+                        onClick={() => rejectRequest(slot)}
+                        disabled={isProcessing}
+                        className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-white transition-colors duration-200 
+                          ${isProcessing ? 
+                            'bg-gray-400 cursor-not-allowed' : 
+                            'bg-red-500 hover:bg-red-600'}`}
+                      >
+                        {isProcessing ? (
+                          <Loader2 className="animate-spin h-5 w-5" />
+                        ) : (
+                          <XCircle className="h-5 w-5" />
+                        )}
+                        <span>{isProcessing ? 'Processing' : 'Reject'}</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-10">
-              <p className="text-gray-500 text-lg">No pending requests available.</p>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

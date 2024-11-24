@@ -30,7 +30,7 @@ const Navbar = () => {
         location.pathname === path ? 'text-[#3B50D5]' : 'text-black';
 
     return (
-        <nav className="navbar flex justify-between items-center px-4 md:px-10 h-16 bg-white">
+        <nav className="navbar flex justify-between items-center px-4 md:px-10 h-14 bg-white mx-2 rounded-md shadow-sm my-2 sticky top-0 left-0 right-0">
             {/* Logo */}
             <div className="flex items-center">
                 <img src={logo} alt="Logo" className="w-28 md:w-auto h-auto cursor-pointer" />
@@ -59,7 +59,7 @@ const Navbar = () => {
 
             {/* Menu Items */}
             <div
-                className={`absolute md:relative top-16 md:top-0 left-0 md:left-auto w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none ${
+                className={`absolute md:relative top-16 md:top-0 left-0 md:left-auto w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none font-medium ${
                     isMenuOpen ? 'block' : 'hidden'
                 } md:flex flex-col md:flex-row items-center md:items-center gap-y-4 md:gap-y-0 md:gap-x-12 py-4 md:py-0`}
             >
@@ -82,8 +82,8 @@ const Navbar = () => {
                     Build Resume
                 </Link>
                 <Link
-                    to="/profile"
-                    className={`px-4 py-2 md:p-0 ${isActive('/profile')}`}
+                    to="/mentee-profile"
+                    className={`px-4 py-2 md:p-0 ${isActive('/mentee-profile')}`}
                 >
                     Profile
                 </Link>

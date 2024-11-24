@@ -33,6 +33,10 @@ const menteeSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    image: { 
+        type: String, 
+        required: true 
+    },
     linkedin: { 
         type: String,
         trim: true,

@@ -11,9 +11,11 @@ import ResumeBuilder from './Pages/Mentee/ResumeBuilder.jsx';
 import MentorAvailability from './Components/Mentor/Availability.jsx';
 import MenteeBooking from './Components/Mentee/FindMentor.jsx';
 import MentorRequests from './Components/Mentor/Request.jsx';
-import ManageSlots from './Components/Mentor/ManageSlots.jsx';
 import MentorProfile from './Pages/Mentor/MentorProfile.jsx';
 import MentorProfileonMentee from './Components/Mentee/MentorProfile.jsx';
+import MenteeProfileOverview from './Pages/Mentee/MenteeProfile.jsx';
+import MenteeProfile from './Components/Mentee/MenteeProfile.jsx';
+import EditMenteeProfile from './Components/Mentee/EditMenteeProfile.jsx';
 
 import Community from './Components/Mentor/Community.jsx';
 import JoinCommunity from './Components/Mentee/JoinCommunity.jsx';
@@ -52,6 +54,7 @@ function App() {
         <Route path="/mentor-register" element={<MentorRegister />} />
         <Route path="/mentee-register" element={<MenteeRegister />} />
         <Route path="/resume-builder" element={<ResumeBuilder />}/>
+        <Route path="/mentee-profile/:menteeId" element={<MenteeProfileOverview />} />
 
         {/* Protected Routes */}
         <Route
@@ -95,14 +98,6 @@ function App() {
           }
         />
         <Route
-          path="/manage-slots"
-          element={
-            <ProtectedRoute>
-              <ManageSlots />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/mentor-profile"
           element={
             <ProtectedRoute>
@@ -126,15 +121,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/resume-builder"
+        <Route
+          path="/mentee-profile"
           element={
             <ProtectedRoute>
-              <ResumeBuilder />
+              <MenteeProfile />
             </ProtectedRoute>
           }
-        /> */}
-        <Route path='/mentorprofilebymentee' element={<MentorProfileonMentee />} />
+        />
+        <Route path="/mentee/:menteeId/edit" element={<ProtectedRoute><EditMenteeProfile /></ProtectedRoute>} />
+        <Route path='/mentorProfile/:mentorId' element={<MentorProfileonMentee />} />
       </Routes>
     </BrowserRouter>
   );

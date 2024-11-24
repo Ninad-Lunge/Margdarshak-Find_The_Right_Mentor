@@ -16,7 +16,6 @@ const MentorSchema = new mongoose.Schema({
   whyMentor: { type: String, required: true },
   positionofmentors: { type: String, required: true },
 
-    
   Technologies: {
     type: [String],
     required: true,
@@ -27,10 +26,7 @@ const MentorSchema = new mongoose.Schema({
       "React",
       "Node.js",
       "Data Science",
-      "Machine Learning",
-      "Project Management",
-      "Leadership",
-      "Communication"
+      "Machine Learning"
     ]
   },
   industry: {

@@ -18,11 +18,7 @@ const MenteeBooking = () => {
 
   const handleChange = (slot) => {
     if (slot) {
-      localStorage.setItem('mentorId', slot.mentorId._id);
-      console.log(slot.mentorId._id);
-
-
-      navigate('/mentorprofilebymentee');
+      navigate(`/mentorProfile/${slot.mentorId._id}`);
     } else {
       console.error('Slot or mentorId is undefined');
     }
@@ -125,9 +121,11 @@ const MenteeBooking = () => {
       />
 
       <div className="container mx-auto px-4 mt-5">
-        <h1 className="text-2xl font-semibold text-center mb-6 text-[#3B50D5]">
-          Available Slots for Mentoring
-        </h1>
+
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 text-center">Available Slots for Mentoring</h1>
+          <p className="mt-2 text-gray-600 text-center">Find the right mentor for you</p>
+        </div>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

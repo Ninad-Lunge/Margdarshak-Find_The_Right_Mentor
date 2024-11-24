@@ -100,9 +100,6 @@ exports.toggleFollowMentor = async (req, res) => {
   const { mentorId } = req.params;
   const menteeId = req.user?.id;
 
-  // console.log('Mentor ID:', mentorId);
-  // console.log('Mentee ID:', menteeId);
-
   try {
       const mentor = await Mentor.findById(mentorId);
       const mentee = await Mentee.findById(menteeId);
@@ -140,7 +137,6 @@ exports.toggleFollowMentor = async (req, res) => {
       res.status(500).json({ success: false, message: 'Error toggling follow status', error: error.message });
   }
 };
-
 
 // Check if mentee follows a mentor
 exports.isFollowingMentor = async (req, res) => {

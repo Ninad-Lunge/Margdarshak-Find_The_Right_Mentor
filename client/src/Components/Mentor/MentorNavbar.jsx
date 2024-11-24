@@ -44,10 +44,10 @@ const Navbar = () => {
 
             <div className={`links ${isMenuOpen ? 'block' : 'hidden'} md:flex flex-col md:flex-row gap-y-4 md:gap-1 gap-x-6 md:gap-x-12 mb-4 md:mb-0 text-sm font-medium`}>
                 <Link to="/mentor-dashboard" className={isActive('/mentor-dashboard')}>Dashboard</Link>
-                <Link to="/manage-slots" className={isActive('/manage-slots')}>Manage Slots</Link>
+                <Link to="/add-slots" className={isActive('/add-slots')}>Manage Slots</Link>
                 <Link to="/manage-requests" className={isActive('/manage-requests')}>Manage Requests</Link>
-                <Link to="/mentor-profile" className={isActive('/mentor-profile')}>Profile</Link>
                 <Link to="/create-community" className={isActive('/create-community')}>Community</Link>
+                <Link to="/mentor-profile" className={isActive('/mentor-profile')}>Profile</Link>
                 <button onClick={handleLogout} className={isActive('')}>Log Out</button>
             </div>
         </nav>

@@ -2,7 +2,8 @@ import Navbar from "../../Components/Mentee/MenteeNavbar";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FaEnvelope, FaLinkedin, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const MenteeDashBoard = () => {
   const [upcomingSlots, setUpcomingSlots] = useState([]);
@@ -93,6 +94,8 @@ const MenteeDashBoard = () => {
     fetchFollowedMentors();
   }, []);
 
+  const navigate = useNavigate();
+
   return (
     <div className="menteeDashboard bg-gray-50 min-h-screen">
       <Navbar />
@@ -155,56 +158,41 @@ const MenteeDashBoard = () => {
             <p className="text-gray-600">You are not following any mentors yet.</p>
           )}
           <div className="grid grid-cols-1 gap-4">
-            {!isLoadingMentors &&
-                followedMentors.map((mentor) => (
-                <div
-                    key={mentor._id}
-                    className="border rounded-lg p-6 shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
-                >
-                    <div className="flex items-center space-x-6">
-                    <img
-                        src={mentor.image || "/default-avatar.png"}
-                        alt={`${mentor.firstName} ${mentor.lastName}`}
-                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
-                    />
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800">
-                        {mentor.firstName} {mentor.lastName}
-                        </h3>
-                        <p className="text-gray-600 text-base">{mentor.jobTitle}</p>
-                    </div>
-                    </div>
-                    <div className="flex justify-between items-center mt-6">
-                    <div className="flex space-x-4 mx-2">
-                        <a 
-                        href={`mailto:${mentor.email}`} 
-                        className="text-black hover:text-gray-700 transition-colors"
-                        title="Email"
-                        >
-                        <FaEnvelope size={30} />
-                        </a>
-                        {mentor.linkedin && (
-                        <a 
-                            href={mentor.linkedin} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-black hover:text-gray-700 transition-colors"
-                            title="LinkedIn"
-                        >
-                            <FaLinkedin size={30} />
-                        </a>
-                        )}
-                    </div>
-                    <button
-                        onClick={() => unFollowMentor(mentor._id)}
-                        className="text-red-500 border border-red-500 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
-                    >
-                        Unfollow
-                    </button>
-                    </div>
+          {!isLoadingMentors &&
+            followedMentors.map((mentor) => (
+              <div
+                key={mentor._id}
+                className="border rounded-lg p-4 shadow-md bg-white hover:shadow-lg transition-shadow duration-300 cursor-pointer grid grid-cols-3"
+                onClick={() => navigate(`/mentorProfile/${mentor._id}`)}
+              >
+                <div className="flex items-center space-x-4 col-span-2">
+                  <img
+                    src={mentor.image || "/default-avatar.png"}
+                    alt={`${mentor.firstName} ${mentor.lastName}`}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
+                  />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {mentor.firstName} {mentor.lastName}
+                    </h3>
+                    <p className="text-gray-600 text-sm">{mentor.jobTitle}</p>
+                  </div>
                 </div>
-                ))}
-            </div>
+
+                <div className="flex mt-8 place-content-end">
+                  <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        unFollowMentor(mentor._id);
+                      }}
+                      className="text-red-500 border border-red-500 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+                    >
+                      Unfollow
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@ const MentorRegister = () => {
     // Enum Values (frontend-friendly)
     const TechnologiesOptions = [
         'JavaScript', 'Python', 'Java', 'React', 'Node.js', 'Data Science',
-        'Machine Learning', 'Project Management', 'Leadership', 'Communication',
+        'Machine Learning'
     ];
 
     const industryOptions = [

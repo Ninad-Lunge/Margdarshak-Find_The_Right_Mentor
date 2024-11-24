@@ -144,7 +144,7 @@ const MentorProfile = () => {
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-64 relative">
                 <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2">
                     <img
-                        src={mentorData.image}
+                        src={mentorData?.image}
                         alt={`${mentorData.firstName} ${mentorData.lastName}`}
                         className="w-40 h-40 rounded-full border-4 border-white shadow-lg object-cover"
                     />

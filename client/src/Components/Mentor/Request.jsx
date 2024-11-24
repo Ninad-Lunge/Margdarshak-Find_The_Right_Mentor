@@ -32,7 +32,7 @@ const MentorRequests = () => {
 
       window.addEventListener('message', async (event) => {
         if (event.origin !== 'http://localhost:5000') return;
-        
+
         if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
           authWindow.close();
           localStorage.setItem('google_access_token', event.data.token);
@@ -78,11 +78,11 @@ const MentorRequests = () => {
     const token = localStorage.getItem('token');
     const updateData = { status };
     if (meetLink) updateData.meetLink = meetLink;
-    
+
     await axios.put(
       `http://localhost:5000/api/availability/${slotId}/status`,
       updateData,
-      { headers: { Authorization: `Bearer ${token}` }}
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     
     setBookedSlots(prev => prev.filter(slot => slot._id !== slotId));
@@ -92,7 +92,7 @@ const MentorRequests = () => {
     try {
       setError(null);
       setIsProcessing(true);
-      
+
       const token = localStorage.getItem('google_access_token');
       if (!token) {
         localStorage.setItem('pending_slot', JSON.stringify(slot));
@@ -117,7 +117,7 @@ const MentorRequests = () => {
         'http://localhost:5000/api/auth/schedule-meet',
         meetingData,
         {
-          headers: { 
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }

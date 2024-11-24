@@ -10,7 +10,8 @@ const {
   searchMentors,
   mentorLogin,
   isFollowingMentor,
-  toggleFollowMentor
+  toggleFollowMentor,
+  recommendedmentors
 
 } = require('../controllers/mentorController');
 
@@ -26,5 +27,6 @@ router.get('/search', searchMentors); // Search mentors by filters
 router.post('/login', mentorLogin); // Mentor login
 router.get('/:mentorId/is-following', verifyToken, isFollowingMentor); // Check if mentee is following a mentor
 router.post('/:mentorId/follow', verifyToken, toggleFollowMentor); // Follow or unfollow a mentor
+router.post('/recommended-mentors', recommendedmentors); 
 
 module.exports = router;

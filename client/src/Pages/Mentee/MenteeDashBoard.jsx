@@ -1,25 +1,44 @@
 import Navbar from "../../Components/Mentee/MenteeNavbar";
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const MenteeDashBoard = () => {
+  const [mentors, setMentors] = useState([]);
   const [upcomingSlots, setUpcomingSlots] = useState([]);
   const [followedMentors, setFollowedMentors] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(true);
   const [isLoadingMentors, setIsLoadingMentors] = useState(true);
   const [menteeData, setMenteeData] = useState();
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   const menteeId = localStorage.getItem("menteeId");
+  // const mentorId = localStorage.getItem("mentorId");
+
+  const handleChange = (mentorId) => {
+
+    if (mentorId) {
+      localStorage.setItem('mentorId', mentorId);
+      // console.log(mentorId);
+      navigate('/mentorprofilebymentee');
+    } else {
+      console.error('Slot or mentorId is undefined');
+    }
+  };
 
   const fetchMenteeData = useCallback(async () => {
     try {
       const response = await axios.get(`/api/mentee/${menteeId}`);
       setMenteeData(response.data.mentee);
-      console.log(response.data.mentee);
+      // console.log(response.data.mentee);
+      localStorage.setItem("mentee", JSON.stringify(response.data.mentee));
+
     } catch (error) {
       console.error("Error fetching mentee:", error.response || error);
       setError(error.response?.data?.error || "Error fetching mentee");
@@ -60,7 +79,7 @@ const MenteeDashBoard = () => {
   const fetchFollowedMentors = async () => {
     setIsLoadingMentors(true);
     try {
-    //   const token = localStorage.getItem("token");
+      //   const token = localStorage.getItem("token");
       const menteeId = localStorage.getItem("menteeId");
       const response = await axios.get(`/api/mentee/${menteeId}/followed-mentors`);
 
@@ -89,23 +108,45 @@ const MenteeDashBoard = () => {
     }
   };
 
+  const fetchMentors = async () => {
+    try {
+      const mentee = JSON.parse(localStorage.getItem("mentee"));
+      // console.log(menteeSkills);
+      const response = await axios.post("/api/mentor/recommended-mentors", {
+        skills: mentee.skills,
+      });
+
+      setMentors(response.data.mentors);
+    } catch (error) {
+      console.error('Error fetching recommended mentors', error);
+    } finally {
+      setIsLoadingMentors(false);
+    }
+  };
+
   useEffect(() => {
+    fetchMentors();
     fetchMenteeConfirmedSlots();
     fetchFollowedMentors();
   }, []);
 
-  const navigate = useNavigate();
-
   return (
     <div className="menteeDashboard bg-gray-50 min-h-screen">
       <Navbar />
-      <h1 className="text-lg font-semibold mt-4 mx-4">{menteeData ? `Hello, ${menteeData.firstName} !` : "Hello, Mentee (Loading...)"}</h1>
-
-      <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-4">
+      <h1 className="text-lg flex gap-2 justify-center items-center font-semibold mt-4 mx-4">
+        {menteeData ? (
+          <>
+            Hello,  <span className="text-blue-500"> {menteeData.firstName}!</span>
+          </>
+        ) : (
+          "Hello, Mentee (Loading...)"
+        )}
+      </h1>
+      <div className="grid grid-cols-3 mx-1 md:mx-4 gap-4 mt-2">
         {/* Left Section */}
-        <div className="col-span-2 space-y-4">
+        <div className="col-span-2 space-y-2">
           {/* Upcoming Meetings */}
-          <div className="upcoming-meetings shadow rounded-md bg-white p-4 h-full">
+          <div className="upcoming-meetings shadow rounded-md bg-white p-4 ">
             <h3 className="text-gray-800 font-medium mb-2">Upcoming Meetings</h3>
             {isLoadingSlots && (
               <div className="flex justify-center items-center h-32">
@@ -143,12 +184,78 @@ const MenteeDashBoard = () => {
               ))}
             </div>
           </div>
-        </div>
+          {/* Recommended Mentors */}
 
+          <div className="recommended-mentors shadow-lg rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 p-6 mt-6 text-white">
+            <h3 className="text-xl font-bold mb-4 text-white">Recommended Mentors</h3>
+
+            {isLoadingMentors ? (
+              <div className="flex justify-center items-center">
+                <FaSpinner className="animate-spin text-white text-3xl" />
+                <p className="ml-2 text-white">Loading mentors...</p>
+              </div>
+            ) : mentors.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {mentors.map((mentor) => (
+                  <div
+                    key={mentor._id}
+                    className="bg-white text-gray-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all hover:scale-105 flex items-center space-x-4"
+                  >
+                    {/* Mentor Image */}
+                    <img
+                      src={mentor.image || '/default-avatar.png'}
+                      alt={`${mentor.firstName} ${mentor.lastName}`}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-purple-500"
+                    />
+
+                    {/* Mentor Details */}
+                    <div className="flex-grow">
+                      {/* Name and View Profile Button */}
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-semibold text-lg text-gray-800">
+                          {mentor.firstName} {mentor.lastName}
+                        </h4>
+                        <button
+                          onClick={() => handleChange(mentor._id)}
+                          className="text-indigo-600 border border-indigo-500 px-2 py-1 text-sm rounded-md hover:bg-indigo-50 transition-colors"
+                        >
+                          View Profile
+                        </button>
+                      </div>
+
+                      {/* Job Title */}
+                      <p className="text-purple-700 text-sm font-medium">{mentor.jobTitle}</p>
+
+                      {/* Skills */}
+                      <p className="text-gray-600 text-sm">
+                        Skills: <span className="font-medium">{mentor.Technologies?.join(', ') || 'N/A'}</span>
+                      </p>
+
+                      {/* Experience and Followers */}
+                      <div className="mt-2 flex items-center space-x-2">
+                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-md">
+                          {mentor.yearofexperience} years experience
+                        </span>
+                        <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md">
+                          {mentor.followerCount} followers
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                ))}
+              </div>
+            ) : (
+              <p className="text-white">No mentors available based on your profile.</p>
+            )}
+          </div>
+        </div>
         {/* Right Section: Followed Mentors */}
-        <div className="notifications col-span-1 shadow rounded-md bg-white p-4">
-          <h2 className="text-gray-800 font-medium mb-4">Followed Mentors</h2>
-          {isLoadingMentors && (
+        <div className="notifications col-span-1 shadow-lg rounded-md bg-gradient-to-r from-purple-500 to-indigo-400  p-4">
+          <h2 className="text-white font-bold text-xl mb-4 border-b-2 pb-2 border-blue-300">
+            Followed Mentors
+          </h2>
+          {isLoadingMentors ? (
             <div className="flex justify-center items-center">
               <FaSpinner className="animate-spin text-blue-500 text-2xl" />
               <p className="ml-2 text-gray-600">Loading mentors...</p>
@@ -158,45 +265,60 @@ const MenteeDashBoard = () => {
             <p className="text-gray-600">You are not following any mentors yet.</p>
           )}
           <div className="grid grid-cols-1 gap-4">
-          {!isLoadingMentors &&
-            followedMentors.map((mentor) => (
-              <div
-                key={mentor._id}
-                className="border rounded-lg p-4 shadow-md bg-white hover:shadow-lg transition-shadow duration-300 cursor-pointer grid grid-cols-3"
-                onClick={() => navigate(`/mentorProfile/${mentor._id}`)}
-              >
-                <div className="flex items-center space-x-4 col-span-2">
-                  <img
-                    src={mentor.image || "/default-avatar.png"}
-                    alt={`${mentor.firstName} ${mentor.lastName}`}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
-                  />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {mentor.firstName} {mentor.lastName}
-                    </h3>
-                    <p className="text-gray-600 text-sm">{mentor.jobTitle}</p>
-                  </div>
-                </div>
-
-                <div className="flex mt-8 place-content-end">
-                  <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        unFollowMentor(mentor._id);
-                      }}
-                      className="text-red-500 border border-red-500 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
+            {!isLoadingMentors &&
+                followedMentors.map((mentor) => (
+                <div
+                    key={mentor._id}
+                    className="border rounded-lg p-6 shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
+                >
+                    <div className="flex items-center space-x-6">
+                    <img
+                        src={mentor.image || "/default-avatar.png"}
+                        alt={`${mentor.firstName} ${mentor.lastName}`}
+                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
+                    />
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-800">
+                        {mentor.firstName} {mentor.lastName}
+                        </h3>
+                        <p className="text-gray-600 text-base">{mentor.jobTitle}</p>
+                    </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-6">
+                    <div className="flex space-x-4 mx-2">
+                        <a 
+                        href={`mailto:${mentor.email}`} 
+                        className="text-black hover:text-gray-700 transition-colors"
+                        title="Email"
+                        >
+                        <FaEnvelope size={30} />
+                        </a>
+                        {mentor.linkedin && (
+                        <a 
+                            href={mentor.linkedin} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-black hover:text-gray-700 transition-colors"
+                            title="LinkedIn"
+                        >
+                            <FaLinkedin size={30} />
+                        </a>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => unFollowMentor(mentor._id)}
+                        className="text-red-500 border border-red-500 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
                     >
-                      Unfollow
-                  </button>
+                        Unfollow
+                    </button>
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
+                ))}
+            </div>
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default MenteeDashBoard;

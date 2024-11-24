@@ -155,3 +155,30 @@ exports.isFollowingMentor = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error checking follow status', error: error.message });
   }
 };
+
+
+//recommended mentors
+exports.recommendedmentors = async (req, res) => {
+  try {
+    const { skills } = req.body; 
+    // console.log("Received skills:", skills);
+
+    if (!skills || !skills.length) {
+      return res.status(400).json({ success: false, message: "Skills are required" });
+    }
+
+    const mentors = await Mentor.find({
+      Technologies: { $in: skills },
+    })
+    .sort({ yearofExperience: -1, followerCount: -1 }) // Sort by experience, then follower count
+    .select('firstName lastName jobTitle image Technologies yearofexperience followerCount');
+
+  console.log("Sorted mentors:", mentors);
+
+
+    res.status(200).json({ success: true, mentors });
+  } catch (error) {
+    console.error("Error fetching recommended mentors:", error.message);
+    res.status(500).json({ success: false, message: 'Error fetching mentors' });
+  }
+};

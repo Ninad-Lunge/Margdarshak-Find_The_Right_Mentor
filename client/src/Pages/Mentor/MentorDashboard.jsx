@@ -201,7 +201,7 @@ const MentorDashboard = () => {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold">Meetings</h3>
               <button
-                onClick={() => navigate('/manage-slots')}
+                onClick={() => navigate('/add-slots')}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Add Slots

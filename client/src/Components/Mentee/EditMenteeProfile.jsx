@@ -14,6 +14,7 @@ const EditMenteeProfile = () => {
     location: '',
     occupation: '',
     bio: '',
+    image: '',
     skills: [],
     education: [],
   });
@@ -137,6 +138,18 @@ const EditMenteeProfile = () => {
               className="w-full p-2 border rounded"
               rows="4"
             ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Image URL</label>
+            <input
+              type='text'
+              name="image"
+              value={menteeData.image}
+              alt={`${menteeData.firstName} ${menteeData.lastName}`}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              required
+            />
           </div>
           {/* Skills */}
           <div>

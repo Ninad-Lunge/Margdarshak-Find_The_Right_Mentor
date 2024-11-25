@@ -5,7 +5,7 @@ import Navbar from "./MenteeNavbar";
 import ReadBlogs from "./ReadBlogs";
 
 const CommunityCard = ({ community, onSelect, isMember, onJoinLeave }) => (
-  <div className="bg-white rounded-lg shadow-md p-6 mb-4 w-full max-w-md hover:shadow-lg transition-shadow">
+  <div className="bg-white rounded-lg shadow-md p-6 mb-4 w-full max-w-sm hover:shadow-lg transition-shadow">
     <div className="mb-6">
       <div className="flex items-center gap-2 text-xl font-semibold mb-2">
         <Users className="h-6 w-6 text-blue-600" />
@@ -47,7 +47,7 @@ const CommunityCard = ({ community, onSelect, isMember, onJoinLeave }) => (
 const JoinCommunity = () => {
   const [communities, setCommunities] = useState([]);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
-  const [userCommunities, setUserCommunities] = useState([]); // Track user's joined communities
+  const [userCommunities, setUserCommunities] = useState([]);
 
   const fetchCommunities = async () => {
     try {
@@ -124,8 +124,8 @@ const JoinCommunity = () => {
     <>
       <Navbar />
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Community Platform</h1>
-        <div className="flex flex-wrap gap-4">
+        <h1 className="text-2xl font-bold mb-6">Community Platform</h1>
+        <div className="flex flex-wrap gap-6 justify-center">
           {communities.map((community) => {
             const isMember = userCommunities.includes(community._id); // Check if user is a member
             return (

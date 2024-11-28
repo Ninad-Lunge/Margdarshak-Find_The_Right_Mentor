@@ -1,9 +1,8 @@
-![Margadarshak](https://github.com/user-attachments/assets/398e2db4-991c-416d-a57c-29ae1f96c655)
-
-# Margadarshak - Find the Right Mentor for youself.
+# Margdarshak - Find the Right Mentor for youself.
+<img src="https://github.com/user-attachments/assets/398e2db4-991c-416d-a57c-29ae1f96c655" alt="Margadarshak" width="50%">
 
 ## 📚 Overview  
-Margadarshak is an advanced web-based mentorship platform that bridges the gap between aspiring professionals and experienced mentors. Designed to provide personalized career guidance, skill development, and collaborative learning opportunities, Margadarshak offers a seamless and efficient mentoring experience.  
+Margdarshak is an advanced web-based mentorship platform that bridges the gap between aspiring professionals and experienced mentors. Designed to provide personalized career guidance, skill development, and collaborative learning opportunities, Margadarshak offers a seamless and efficient mentoring experience.  
 
 With features like automated session booking, an ATS-optimized resume builder, real-time chat, and mentor-driven communities, Margadarshak is your one-stop solution for professional growth and networking.  
 

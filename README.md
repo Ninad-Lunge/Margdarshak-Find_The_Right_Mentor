@@ -1,5 +1,4 @@
-<img src="![Margadarshak](https://github.com/user-attachments/assets/398e2db4-991c-416d-a57c-29ae1f96c655)
-">
+![Margadarshak](https://github.com/user-attachments/assets/398e2db4-991c-416d-a57c-29ae1f96c655)
 
 # Margadarshak - Find the Right Mentor for youself.
 

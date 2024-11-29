@@ -25,7 +25,7 @@ const CreateBlogForm = ({ communityId, onCreateBlog, onCancel }) => {
         return;
       }
 
-      const response = await axios.post(`/api/communities/${communityId}/blogs`, newBlog, {
+      const response = await axios.post(`https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${communityId}/blogs`, newBlog, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -122,7 +122,7 @@ const EditBlogForm = ({ blog, onUpdateBlog, onCancel }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `/api/communities/${blog.community}/blogs/${blog._id}`, 
+        `https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${blog.community}/blogs/${blog._id}`, 
         updatedBlog, 
         {
           headers: {
@@ -219,7 +219,7 @@ const CommunityView = ({ community, onBack }) => {
           return;
         }
   
-        const response = await axios.get(`/api/communities/${community._id}/blogs`, {
+        const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${community._id}/blogs`, {
           headers: { Authorization: `Bearer ${token}` }
         });
   
@@ -269,7 +269,7 @@ const CommunityView = ({ community, onBack }) => {
       if (!token) throw new Error('No authentication token found');
       if (!community?._id || !blogId) throw new Error('Invalid Community or Blog ID');
   
-      const response = await axios.delete(`/api/communities/${community._id}/blogs/${blogId}`, {
+      const response = await axios.delete(`https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${community._id}/blogs/${blogId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
   

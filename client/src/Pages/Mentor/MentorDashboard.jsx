@@ -27,7 +27,7 @@ const MentorDashboard = () => {
 
   useEffect(() => {
     if (!mentorData && mentorId) {
-      fetch(`/api/mentor/${mentorId}`)
+      fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}`)
         .then(response => response.json())
         .then(data => {
           if (data.success) {
@@ -48,7 +48,7 @@ const MentorDashboard = () => {
         return;
       }
 
-      const response = await axios.get('/api/availability/confirmed', {
+      const response = await axios.get('https://margdarshak-find-the-right-mentor.onrender.com/api/availability/confirmed', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -70,7 +70,7 @@ const MentorDashboard = () => {
         return;
       }
   
-      const response = await axios.delete(`/api/availability/delete-slot/${id}`, {
+      const response = await axios.delete(`https://margdarshak-find-the-right-mentor.onrender.com/api/availability/delete-slot/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
   

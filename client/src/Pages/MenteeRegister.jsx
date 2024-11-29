@@ -44,7 +44,7 @@ const MenteeRegister = () => {
 
         try {
             setIsLoading(true);
-            const response = await fetch('/api/process', {
+            const response = await fetch('https://margdarshak-find-the-right-mentor.onrender.com/api/process', {
                 method: 'POST',
                 body: formData,
             });
@@ -88,7 +88,7 @@ const MenteeRegister = () => {
         console.log('Form Data Submitted: ', formData);
 
         try {
-            const response = await fetch('/api/mentee/', {
+            const response = await fetch('https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

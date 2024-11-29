@@ -34,7 +34,7 @@ const MenteeBooking = () => {
         return;
       }
 
-      const response = await axios.get('/api/availability/mentor', {
+      const response = await axios.get('https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentor', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -65,7 +65,7 @@ const MenteeBooking = () => {
       }
 
       const response = await axios.post(
-        '/api/availability/book',
+        'https://margdarshak-find-the-right-mentor.onrender.com/api/availability/book',
         { slotId },
         {
           headers: { Authorization: `Bearer ${token}` },

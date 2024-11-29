@@ -16,7 +16,7 @@ const MentorAvailability = () => {
   const fetchAvailability = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/availability/mentorslot', {
+      const response = await axios.get('https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentorslot', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAvailabilityList(response.data);
@@ -55,7 +55,7 @@ const MentorAvailability = () => {
   
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        '/api/availability/add',
+        'https://margdarshak-find-the-right-mentor.onrender.com/api/availability/add',
         { date, startTime, endTime, status: 'available' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -75,7 +75,7 @@ const MentorAvailability = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/availability/${id}`, {
+      await axios.delete(`https://margdarshak-find-the-right-mentor.onrender.com/api/availability/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAvailabilityList(availabilityList.filter((slot) => slot._id !== id));
@@ -129,7 +129,7 @@ const MentorAvailability = () => {
   
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `/api/availability/${editingSlot._id}`,
+        `https://margdarshak-find-the-right-mentor.onrender.com/api/availability/${editingSlot._id}`,
         { date, startTime, endTime },
         { headers: { Authorization: `Bearer ${token}` } }
       );

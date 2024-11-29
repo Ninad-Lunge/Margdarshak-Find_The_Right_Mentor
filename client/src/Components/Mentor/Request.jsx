@@ -25,7 +25,7 @@ const MentorRequests = () => {
 
       setIsAuthenticating(true);
       const authWindow = window.open(
-        'http://localhost:5000/api/auth/google',
+        'http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/auth/google',
         'Google Auth',
         `width=${width},height=${height},top=${top},left=${left}`
       );
@@ -61,7 +61,7 @@ const MentorRequests = () => {
         throw new Error('No token found, please log in.');
       }
 
-      const response = await axios.get('http://localhost:5000/api/availability/booked', {
+      const response = await axios.get('http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/availability/booked', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -80,7 +80,7 @@ const MentorRequests = () => {
     if (meetLink) updateData.meetLink = meetLink;
 
     await axios.put(
-      `http://localhost:5000/api/availability/${slotId}/status`,
+      `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/availability/${slotId}/status`,
       updateData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -114,7 +114,7 @@ const MentorRequests = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:5000/api/auth/schedule-meet',
+        'http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/auth/schedule-meet',
         meetingData,
         {
           headers: {

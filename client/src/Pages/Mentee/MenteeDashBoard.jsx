@@ -37,7 +37,7 @@ const MenteeDashBoard = () => {
 
   const fetchMenteeData = useCallback(async () => {
     try {
-      const response = await axios.get(`/api/mentee/${menteeId}`);
+      const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${menteeId}`);
       setMenteeData(response.data.mentee);
       // console.log(response.data.mentee);
       localStorage.setItem("mentee", JSON.stringify(response.data.mentee));
@@ -64,7 +64,7 @@ const MenteeDashBoard = () => {
         return;
       }
 
-      const response = await axios.get("/api/availability/mentee/confirmed", {
+      const response = await axios.get("https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentee/confirmed", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -84,7 +84,7 @@ const MenteeDashBoard = () => {
     try {
       //   const token = localStorage.getItem("token");
       const menteeId = localStorage.getItem("menteeId");
-      const response = await axios.get(`/api/mentee/${menteeId}/followed-mentors`);
+      const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${menteeId}/followed-mentors`);
 
       setFollowedMentors(response.data.following || []);
     } catch (error) {
@@ -99,7 +99,7 @@ const MenteeDashBoard = () => {
   const unFollowMentor = async (mentorId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`/api/mentor/${mentorId}/follow`, {}, {
+      await axios.post(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}/follow`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -116,7 +116,7 @@ const MenteeDashBoard = () => {
       const mentee = JSON.parse(localStorage.getItem("mentee"));
 
       // console.log(menteeSkills);
-      const response = await axios.post("/api/mentor/recommended-mentors", {
+      const response = await axios.post("https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/recommended-mentors", {
         skills: mentee.skills,
       });
 

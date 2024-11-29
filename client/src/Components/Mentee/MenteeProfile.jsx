@@ -21,7 +21,7 @@ const MenteeProfile = () => {
     const fetchMenteeData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`/api/mentee/${menteeId}`, {
+            const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${menteeId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -39,7 +39,7 @@ const MenteeProfile = () => {
     const fetchMenteeSessions = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`/api/availability/mentee-sessions/${menteeId}`, {
+            const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentee-sessions/${menteeId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -102,7 +102,7 @@ const MenteeProfile = () => {
 
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                         <img
-                            src={menteeData.image || `/api/placeholder/128/128`}
+                            src={menteeData.image || `https://margdarshak-find-the-right-mentor.onrender.com/api/placeholder/128/128`}
                             alt={`${menteeData.firstName} ${menteeData.lastName}`}
                             className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                         />

@@ -20,7 +20,7 @@ const MentorProfile = () => {
         try {
             const token = localStorage.getItem('token');
             const mentorId = localStorage.getItem('mentorId');
-            const response = await axios.get(`/api/availability/mentorslot/${mentorId}`, {
+            const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentorslot/${mentorId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAvailableSlots(response.data);
@@ -39,7 +39,7 @@ const MentorProfile = () => {
             }
 
             const response = await axios.post(
-                '/api/availability/book',
+                'https://margdarshak-find-the-right-mentor.onrender.com/api/availability/book',
                 { slotId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -59,10 +59,10 @@ const MentorProfile = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [followResponse, mentorResponse] = await Promise.all([
-                    fetch(`/api/mentor/${mentorId}/is-following`, {
+                    fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}/is-following`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    fetch(`/api/mentor/${mentorId}`, {
+                    fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     })
                 ]);
@@ -93,7 +93,7 @@ const MentorProfile = () => {
                 return;
             }
 
-            const response = await fetch(`/api/mentor/${mentorId}/follow`, {
+            const response = await fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}/follow`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

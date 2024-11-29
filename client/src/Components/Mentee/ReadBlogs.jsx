@@ -42,7 +42,7 @@ const ReadBlogs = ({ community, onBack }) => {
   const fetchBlogs = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/communities/${community._id}/blogs`
+        `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${community._id}/blogs`
       );
       const blogsData = Array.isArray(response.data) ? response.data : response.data.blogs || [];
       setBlogs(blogsData);
@@ -57,7 +57,7 @@ const ReadBlogs = ({ community, onBack }) => {
     try {
       // Make the API request and store the response
       const response = await axios.post(
-        `http://localhost:5000/api/blogs/${blogId}/like`,
+        `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/blogs/${blogId}/like`,
         {},
         {
           headers: {
@@ -80,7 +80,7 @@ const ReadBlogs = ({ community, onBack }) => {
     try {
       // Make the API request and store the response
       const response = await axios.post(
-        `http://localhost:5000/api/blogs/${blogId}/dislike`,
+        `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/blogs/${blogId}/dislike`,
         {},
         {
           headers: {

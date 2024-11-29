@@ -51,7 +51,7 @@ const JoinCommunity = () => {
 
   const fetchCommunities = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/communities");
+      const response = await axios.get("http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities");
       setCommunities(response.data);
     } catch (error) {
       console.error("Error fetching communities:", error);
@@ -60,7 +60,7 @@ const JoinCommunity = () => {
 
   const fetchUserCommunities = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/user/communities", {
+      const response = await axios.get("http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/user/communities", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -77,7 +77,7 @@ const JoinCommunity = () => {
       if (isAlreadyMember) {
         // Leave community
         await axios.post(
-          `http://localhost:5000/api/communities/${communityId}/leave`,
+          `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${communityId}/leave`,
           {},
           {
             headers: {
@@ -88,7 +88,7 @@ const JoinCommunity = () => {
       } else {
         // Join community
         await axios.post(
-          `http://localhost:5000/api/communities/${communityId}/join`,
+          `http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities/${communityId}/join`,
           {},
           {
             headers: {

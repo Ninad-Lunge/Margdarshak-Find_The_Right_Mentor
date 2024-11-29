@@ -27,7 +27,7 @@ const EditMenteeProfile = () => {
   const fetchMenteeData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/mentee/${menteeId}`, {
+      const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${menteeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -65,7 +65,7 @@ const EditMenteeProfile = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`/api/mentee/${menteeId}`, menteeData, {
+      const response = await axios.put(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${menteeId}`, menteeData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

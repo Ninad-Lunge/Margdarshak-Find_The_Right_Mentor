@@ -118,7 +118,7 @@ const MentorProfile = () => {
     const token = localStorage.getItem('token');
     const mentorId = localStorage.getItem('mentorId');
     try {
-      const response = await fetch(`/api/mentor/${mentorId}`, {
+      const response = await fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,7 +146,7 @@ const MentorProfile = () => {
     const token = localStorage.getItem('token');
     const mentorId = localStorage.getItem('mentorId');
     try {
-      const response = await fetch(`/api/availability/mentor-sessions/${mentorId}`, {
+      const response = await fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/availability/mentor-sessions/${mentorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -196,7 +196,7 @@ const MentorProfile = () => {
     const mentorId = localStorage.getItem('mentorId');
 
     try {
-      const response = await fetch(`/api/mentor/${mentorId}`, {
+      const response = await fetch(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -512,7 +512,7 @@ const MentorProfile = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-start">
             <img
-              src={mentorData.image || `/api/placeholder/128/128`}
+              src={mentorData.image || `https://margdarshak-find-the-right-mentor.onrender.com/api/placeholder/128/128`}
               alt={`${mentorData.firstName} ${mentorData.lastName}`}
               className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mb-4"
             />

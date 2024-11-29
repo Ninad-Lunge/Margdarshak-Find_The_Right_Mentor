@@ -34,7 +34,7 @@ const CreateCommunityForm = ({ onClose, refreshCommunities }) => {
     if (!communityData.title.trim() || !communityData.description.trim()) return;
 
     try {
-      await axios.post("http://localhost:5000/api/communities", communityData, {
+      await axios.post("http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities", communityData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust if needed
         },
@@ -92,7 +92,7 @@ const CommunityPlatform = () => {
 
   const fetchCommunities = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/communities");
+      const response = await axios.get("http://localhost:5000https://margdarshak-find-the-right-mentor.onrender.com/api/communities");
       setCommunities(response.data);
     } catch (error) {
       console.error("Error fetching communities:", error);

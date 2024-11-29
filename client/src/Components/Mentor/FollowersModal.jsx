@@ -13,7 +13,7 @@ const FollowersModal = ({ isOpen, onClose, mentorId }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/mentor/${mentorId}`, {
+      const response = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/${mentorId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -21,7 +21,7 @@ const FollowersModal = ({ isOpen, onClose, mentorId }) => {
         // Fetch detailed information for each follower
         const followersDetails = await Promise.all(
           response.data.mentor.followers.map(async (followerId) => {
-            const menteeResponse = await axios.get(`/api/mentee/${followerId}`, {
+            const menteeResponse = await axios.get(`https://margdarshak-find-the-right-mentor.onrender.com/api/mentee/${followerId}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             return menteeResponse.data.mentee;
@@ -90,7 +90,7 @@ const FollowersModal = ({ isOpen, onClose, mentorId }) => {
                   onClick={() => handleProfileClick(follower._id)}
                 >
                   <img
-                    src={follower.image || `/api/placeholder/40/40`}
+                    src={follower.image || `https://margdarshak-find-the-right-mentor.onrender.com/api/placeholder/40/40`}
                     alt={`${follower.firstName} ${follower.lastName}`}
                     className="w-10 h-10 rounded-full object-cover"
                   />

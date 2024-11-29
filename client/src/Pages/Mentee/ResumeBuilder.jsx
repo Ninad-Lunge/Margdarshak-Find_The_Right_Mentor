@@ -128,7 +128,7 @@ const ResumeBuilder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/generate-resume', formData, {
+      const response = await axios.post('https://margdarshak-find-the-right-mentor.onrender.com/api/generate-resume', formData, {
         responseType: 'blob'
       });
       

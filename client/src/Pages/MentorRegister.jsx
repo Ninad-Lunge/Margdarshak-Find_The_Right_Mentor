@@ -183,7 +183,7 @@ const MentorRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('/api/mentor/', {
+        const response = await fetch('https://margdarshak-find-the-right-mentor.onrender.com/api/mentor/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

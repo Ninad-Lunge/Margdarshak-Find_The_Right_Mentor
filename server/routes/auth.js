@@ -7,7 +7,7 @@ const { OAuth2 } = google.auth;
 const oauth2Client = new OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  'http://localhost:5000/api/auth/google/callback'
+  'https://margdarshak-find-the-right-mentor.onrender.com/api/auth/google/callback'
 );
 
 router.get('/google', (req, res) => {

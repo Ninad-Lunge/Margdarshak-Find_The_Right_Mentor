@@ -25,7 +25,7 @@ const LoginPage = () => {
         e.preventDefault();
         setError('');
         try {
-            const response = await axios.post('/api/auth/login', formData);
+            const response = await axios.post('https://margdarshak-find-the-right-mentor.onrender.com/api/auth/login', formData);
     
             if (response.data.success) {
                 // Store authentication details in localStorage
